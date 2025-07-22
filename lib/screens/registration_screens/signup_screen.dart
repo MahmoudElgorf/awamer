@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:awamer/widgets/signup_screen_widgets/signup_footer.dart';
-import '../widgets/signup_screen_widgets/signup_header.dart';
-import '../widgets/signup_screen_widgets/signup_form.dart';
+import '../../widgets/signup_screen_widgets/signup_header.dart';
+import '../../widgets/signup_screen_widgets/signup_form.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -15,7 +14,6 @@ class SignUpScreen extends StatelessWidget {
           children: const [
             SignUpHeader(),
             SignUpForm(),
-            SignUpFooter()
           ],
         ),
       ),

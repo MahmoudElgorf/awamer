@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:awamer/screens/signup_screen.dart';
+import 'package:awamer/screens/registration_screens/signup_screen.dart';
 import '../shared/auth_footer.dart';
 
 class LogInFooter extends StatelessWidget {

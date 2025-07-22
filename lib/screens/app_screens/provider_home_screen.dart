@@ -1,9 +1,39 @@
-import 'package:awamer/screens/app_screens/profile_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:awamer/screens/registration_screens/signin_screen.dart';
-import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'dart:math';
+import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:awamer/screens/app_screens/profile_screen.dart';
+import 'package:awamer/screens/registration_screens/signin_screen.dart';
+
+class ProviderHomeScreen extends StatelessWidget {
+  const ProviderHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF2F2F2),
+      body: Column(
+        children: [
+          const HeaderSection(),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class HeaderSection extends StatelessWidget {
   const HeaderSection({super.key});
@@ -46,21 +76,6 @@ class HeaderSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          // Search Field
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Search',
-              hintStyle: TextStyle(color: Colors.grey[700]),
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -77,16 +92,14 @@ class BlurBackgroundMenu extends StatefulWidget {
 class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
   final double radius = 80;
   final double center = 110;
-  final Color iconColor = const Color(0xffffffff);
-
+  final Color iconColor = Colors.white;
   int? _pressedIndex;
 
-  List<Map<String, dynamic>> icons = [
+  final List<Map<String, dynamic>> icons = [
     {'icon': Icons.settings, 'label': 'Settings'},
     {'icon': Icons.logout, 'label': 'Logout'},
     {'icon': Icons.shopping_bag, 'label': 'Orders'},
     {'icon': Icons.person, 'label': 'Profile'},
-
   ];
 
   @override
@@ -114,7 +127,6 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
               final angle = (2 * pi / icons.length) * index;
               final dx = center + radius * cos(angle) - 24;
               final dy = center + radius * sin(angle) - 24;
-
               final isPressed = _pressedIndex == index;
 
               return Positioned(
@@ -126,18 +138,15 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
                   },
                   onTapUp: (_) async {
                     setState(() => _pressedIndex = null);
-
                     final label = icons[index]['label'];
-                    Navigator.of(context).pop(); // يقفل الـ dialog
+                    Navigator.of(context).pop();
 
                     if (label == 'Profile') {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                      );
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
                     } else if (label == 'Logout') {
                       await FirebaseAuth.instance.signOut();
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => const SigninScreen()),
+                        MaterialPageRoute(builder: (_) => const SigninScreen()),
                             (route) => false,
                       );
                     } else {
@@ -157,10 +166,7 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
                       children: [
                         Icon(icons[index]['icon'], color: iconColor, size: 30),
                         const SizedBox(height: 4),
-                        Text(
-                          icons[index]['label'],
-                          style: TextStyle(color: iconColor, fontSize: 12),
-                        ),
+                        Text(icons[index]['label'], style: TextStyle(color: iconColor, fontSize: 12)),
                       ],
                     ),
                   ),

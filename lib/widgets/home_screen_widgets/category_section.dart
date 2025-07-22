@@ -1,7 +1,7 @@
+import 'package:awamer/models/data.dart';
+import 'package:awamer/screens/app_screens/service_category_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:awamer/models/models.dart';
 import 'category_item.dart';
-import 'services_list.dart';
 
 class CategorySection extends StatefulWidget {
   const CategorySection({super.key});
@@ -14,28 +14,8 @@ class _CategorySectionState extends State<CategorySection> {
   int? selectedCategoryIndex;
   final ScrollController _scrollController = ScrollController();
 
-  final List<ServiceCategory> categories = const [
-    ServiceCategory(name: 'Delivery', icon: Icons.delivery_dining),
-    ServiceCategory(name: 'Doctors', icon: Icons.local_hospital),
-    ServiceCategory(name: 'Technicians', icon: Icons.build),
-    ServiceCategory(name: 'Stores', icon: Icons.store),
-    ServiceCategory(name: 'Restaurants', icon: Icons.restaurant),
-    ServiceCategory(name: 'Pharmacies', icon: Icons.local_pharmacy),
-    ServiceCategory(name: 'Cleaning', icon: Icons.cleaning_services),
-    ServiceCategory(name: 'Education', icon: Icons.school),
-  ];
-
-  final Map<String, List<ServiceItem>> categoryServices = {
-    'Delivery': [
-      ServiceItem(name: 'Food Delivery', imageUrl: '', rating: 4.5, price: 10),
-      ServiceItem(name: 'Parcel Delivery', imageUrl: '', rating: 4.2, price: 15),
-    ],
-    'Doctors': [
-      ServiceItem(name: 'Dr. Ahmed', imageUrl: '', rating: 4.8, price: 100),
-      ServiceItem(name: 'Dr. Mohamed', imageUrl: '', rating: 4.6, price: 120),
-    ],
-    // أضف باقي الفئات...
-  };
+  final categories = Data.categories;
+  final subCategories = Data.subCategories;
 
   @override
   void dispose() {
@@ -45,17 +25,32 @@ class _CategorySectionState extends State<CategorySection> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedCategoryName = selectedCategoryIndex != null
+        ? categories[selectedCategoryIndex!].name
+        : null;
+
+    final subCats = selectedCategoryName != null
+        ? subCategories[selectedCategoryName] ?? []
+        : [];
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // قسم الفئات مع إمكانية التمرير الأفقي
+          // التصنيفات الرئيسية
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text(
+              'Categories',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
           SizedBox(
-            height: 150, // ارتفاع ثابت لقسم الفئات
+            height: 130,
             child: ListView.builder(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: categories.length,
               itemBuilder: (context, index) {
                 return Padding(
@@ -67,7 +62,7 @@ class _CategorySectionState extends State<CategorySection> {
                       });
                     },
                     child: CategoryItem(
-                      icon: categories[index].icon,
+                      imageAsset: categories[index].imageAsset,
                       label: categories[index].name,
                       isLarge: true,
                       isSelected: selectedCategoryIndex == index,
@@ -78,9 +73,48 @@ class _CategorySectionState extends State<CategorySection> {
             ),
           ),
 
-          if (selectedCategoryIndex != null)
-            ServicesList(
-              services: categoryServices[categories[selectedCategoryIndex!].name] ?? [],
+          // التصنيفات الفرعية
+          if (selectedCategoryIndex != null && subCats.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: subCats.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.9,
+                    ),
+                    itemBuilder: (context, index) {
+                      final subCategory = subCats[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ServiceCategoryScreen(
+                                name: subCategory.name,
+                                imageAsset: subCategory.imageAsset,
+                              ),
+                            ),
+                          );
+                        },
+                        child: CategoryItem(
+                          imageAsset: subCategory.imageAsset,
+                          label: subCategory.name,
+                          isLarge: false,
+                          isSelected: false,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
         ],
       ),

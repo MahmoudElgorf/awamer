@@ -11,6 +11,15 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.7
+  firebase_auth: ^5.6.2
+  firebase_core: ^3.5.0
+  cloud_firestore: ^5.5.0
+  firebase_storage: ^12.4.9
+  image_picker: ^1.1.2
+  google_maps_flutter: ^2.12.3
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +32,33 @@ flutter:
   assets:
     - assets/images/google.png
     - assets/images/facebook.png
+    - assets/images/Delivery.jpg
+    - assets/images/Doctors.jpg
+    - assets/images/Pharmacies.jpg
+    - assets/images/Restaurants.jpg
+    - assets/images/Stores.jpg
+    - assets/images/Technicians.jpg
+    - assets/images/parcel.jpg
+    - assets/images/Internal.jpg
+    - assets/images/Dentist.jpg
+    - assets/images/Pediatrics.jpg
+    - assets/images/Orthopedic.jpg
+    - assets/images/Dermatology.jpg
+    - assets/images/Ophthalmology.jpg
+    - assets/images/ENT.jpg
+    - assets/images/Psychiatry.jpg
+    - assets/images/HumanPharmacy.jpg
+    - assets/images/VeterinaryPharmacy.jpg
+    - assets/images/Electrician.jpg
+    - assets/images/Blacksmith.jpg
+    - assets/images/Carpenter.jpg
+    - assets/images/Plumber.jpg
+    - assets/images/FastFood.jpg
+    - assets/images/TraditionalFood.jpg
+    - assets/images/Plumbing.jpg
+    - assets/images/Grocery.jpg
+    - assets/images/Cleaning.jpg
+    - assets/images/Electrical.jpg
+    - assets/images/Mobile.jpg
+
+

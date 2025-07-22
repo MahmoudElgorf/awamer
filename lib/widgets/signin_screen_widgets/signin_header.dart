@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../screens/home_screen.dart';
+import '../../screens/app_screens/home_screen.dart';
 
-class LoginHeader extends StatelessWidget {
-  const LoginHeader({super.key});
+class SigninHeader extends StatelessWidget {
+  const SigninHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +24,6 @@ class LoginHeader extends StatelessWidget {
               const Text(
                 'Welcome Back!',
                 style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                },
-                child: const Text(
-                  'Skip',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
               ),
             ],
           ),

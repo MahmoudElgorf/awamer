@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1021519029917",
+    "project_id": "awamer-3ee7b",
+    "storage_bucket": "awamer-3ee7b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021519029917:android:2e04ba74020861aa879674",
+        "android_client_info": {
+          "package_name": "com.example.awamer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLLvpRCqEgVtnMpxYjHgnpHw8cyvaaSR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
