@@ -2,7 +2,7 @@ import 'package:awamer/widgets/home_screen_widgets/address_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../widgets/home_screen_widgets/header_section.dart';
+import '../../widgets/shared/header_section.dart';
 import '../../widgets/home_screen_widgets/offer_carousel.dart';
 import '../../widgets/home_screen_widgets/category_section.dart';
 

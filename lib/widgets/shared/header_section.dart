@@ -114,9 +114,7 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
               final angle = (2 * pi / icons.length) * index;
               final dx = center + radius * cos(angle) - 24;
               final dy = center + radius * sin(angle) - 24;
-
               final isPressed = _pressedIndex == index;
-
               return Positioned(
                 left: dx,
                 top: dy,

@@ -1,7 +1,9 @@
 import 'package:awamer/models/data.dart';
-import 'package:awamer/screens/app_screens/service_category_screen.dart';
+import 'package:awamer/screens/app_screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'category_item.dart';
+
+
 
 class CategorySection extends StatefulWidget {
   const CategorySection({super.key});
@@ -14,9 +16,6 @@ class _CategorySectionState extends State<CategorySection> {
   int? selectedCategoryIndex;
   final ScrollController _scrollController = ScrollController();
 
-  final categories = Data.categories;
-  final subCategories = Data.subCategories;
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -26,11 +25,11 @@ class _CategorySectionState extends State<CategorySection> {
   @override
   Widget build(BuildContext context) {
     final selectedCategoryName = selectedCategoryIndex != null
-        ? categories[selectedCategoryIndex!].name
+        ? Data.categories[selectedCategoryIndex!].name
         : null;
 
     final subCats = selectedCategoryName != null
-        ? subCategories[selectedCategoryName] ?? []
+        ? Data.subCategories[selectedCategoryName] ?? []
         : [];
 
     return SingleChildScrollView(
@@ -51,7 +50,7 @@ class _CategorySectionState extends State<CategorySection> {
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: categories.length,
+              itemCount: Data.categories.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -62,8 +61,8 @@ class _CategorySectionState extends State<CategorySection> {
                       });
                     },
                     child: CategoryItem(
-                      imageAsset: categories[index].imageAsset,
-                      label: categories[index].name,
+                      imageAsset: Data.categories[index].imageAsset,
+                      label: Data.categories[index].name,
                       isLarge: true,
                       isSelected: selectedCategoryIndex == index,
                     ),
@@ -97,9 +96,10 @@ class _CategorySectionState extends State<CategorySection> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ServiceCategoryScreen(
-                                name: subCategory.name,
+                              builder: (context) => ChatScreen(
+                                serviceName: subCategory.name,
                                 imageAsset: subCategory.imageAsset,
+                                providerId: subCategory.providerId,
                               ),
                             ),
                           );
