@@ -63,7 +63,7 @@ class AuthChecker extends StatelessWidget {
         }
 
         if (!snapshot.hasData) {
-          return SigninScreen(); // المستخدم غير مسجل دخول
+          return SigninScreen();
         }
 
         final uid = snapshot.data!.uid;

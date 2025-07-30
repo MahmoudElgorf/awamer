@@ -1,29 +1,47 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.awamer">
 
+    <!-- الأذونات الأساسية -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+    <!-- أذونات التخزين المعدّلة للإصدارات الحديثة -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- الأذونات القديمة (للتوافق مع الإصدارات الأقدم) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="awamer"
         android:hardwareAccelerated="true"
-        android:enableOnBackInvokedCallback="true">
+        android:enableOnBackInvokedCallback="true"
+        android:requestLegacyExternalStorage="true">
 
+        <!-- مفتاح خرائط جوجل -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBLLvpRCqEgVtnMpxYjHgnpHw8cyvaaSR8" />
 
+        <!-- النشاط الرئيسي -->
         <activity
             android:name=".MainActivity"
+            android:theme="@style/LaunchTheme"
+            android:windowDisablePreview="true"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
-            android:theme="@style/LaunchTheme"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:excludeFromRecents="true">
 
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
@@ -35,12 +53,13 @@
             </intent-filter>
         </activity>
 
-        <!-- Don't delete the meta-data below. -->
+        <!-- ضروري لتشغيل Flutter -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
 
+    <!-- استعلامات معالجة النصوص -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />

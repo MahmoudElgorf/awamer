@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -23,23 +23,24 @@ dependencies:
   intl: ^0.20.2
   firebase_messaging: ^15.2.10
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   font_awesome_flutter: ^10.5.0
   flutter_lints: ^5.0.0
+  flutter_native_splash: ^2.3.6
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/google.png
-    - assets/images/facebook.png
+    - assets/images/App_Logo.jpg
     - assets/images/Delivery.jpg
     - assets/images/Doctors.jpg
     - assets/images/Pharmacies.jpg
     - assets/images/Restaurants.jpg
     - assets/images/Stores.jpg
-    - assets/images/Technicians.jpg
     - assets/images/parcel.jpg
     - assets/images/Internal.jpg
     - assets/images/Dentist.jpg
@@ -51,16 +52,24 @@ flutter:
     - assets/images/Psychiatry.jpg
     - assets/images/HumanPharmacy.jpg
     - assets/images/VeterinaryPharmacy.jpg
-    - assets/images/Electrician.jpg
-    - assets/images/Blacksmith.jpg
-    - assets/images/Carpenter.jpg
-    - assets/images/Plumber.jpg
     - assets/images/FastFood.jpg
     - assets/images/TraditionalFood.jpg
-    - assets/images/Plumbing.jpg
     - assets/images/Grocery.jpg
-    - assets/images/Cleaning.jpg
-    - assets/images/Electrical.jpg
-    - assets/images/Mobile.jpg
+
+flutter_native_splash:
+  color: "#4C9581"
+  image: assets/images/App_Logo.jpg
+  android: true
+  ios: true
+
+  android_12:
+    color: "#4C9581"
+    image: assets/images/App_Logo.jpg
 
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/App_Logo.jpg"
+  adaptive_icon_background: "#4C9581"
+  adaptive_icon_foreground: "assets/images/App_Logo.jpg"

@@ -19,50 +19,57 @@ class RequestCard extends StatelessWidget {
     final firstName = request['firstName'] ?? '';
     final lastName = request['lastName'] ?? '';
     final fullName = '$firstName $lastName'.trim();
-    final status = request['status'];
-    final statusColor = _getStatusColor(status);
+    final formattedDate = (request['timestamp'] != null && request['timestamp'] is Timestamp)
+        ? _formatDate(request['timestamp'])
+        : 'Date not available';
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: EdgeInsets.zero,
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: statusColor.withOpacity(0.2),
-          child: Icon(Icons.person, color: statusColor),
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
-        title: Text(
-          fullName.isEmpty ? 'مستخدم غير معروف' : fullName,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Text(
-          request['timestamp'] != null && request['timestamp'] is Timestamp
-              ? _formatDate(request['timestamp'])
-              : 'تاريخ غير متاح',
-          style: const TextStyle(color: Colors.grey),
-        ),
-        trailing: Chip(
-          backgroundColor: statusColor,
-          label: Text(
-            _getStatusText(status),
-            style: const TextStyle(color: Colors.white),
-          ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: const Color(0xFF4C9581).withOpacity(0.1),
+              child: const Icon(Icons.person, color: Color(0xFF4C9581)),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    fullName.isEmpty ? 'Unknown User' : fullName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    formattedDate,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -70,32 +77,6 @@ class RequestCard extends StatelessWidget {
 
   String _formatDate(Timestamp timestamp) {
     final date = timestamp.toDate();
-    return DateFormat('yyyy/MM/dd – HH:mm').format(date);
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'pending':
-        return Colors.orange;
-      case 'accepted':
-        return Colors.green;
-      case 'rejected':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getStatusText(String status) {
-    switch (status) {
-      case 'pending':
-        return 'قيد الانتظار';
-      case 'accepted':
-        return 'مقبول';
-      case 'rejected':
-        return 'مرفوض';
-      default:
-        return 'غير معروف';
-    }
+    return DateFormat('yyyy/MM/dd – hh:mm a').format(date);
   }
 }

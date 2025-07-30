@@ -1,9 +1,10 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../widgets/chat_screen_widgets/chat_form.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
   XFile? _selectedImage;
   late String _userId;
   late String _userEmail;
+  String? _providerFullName;
 
   @override
   void initState() {
@@ -39,6 +41,9 @@ class _ChatScreenState extends State<ChatScreen> {
     _userId = user?.uid ?? '';
     _userEmail = user?.email ?? '';
     _loadUserData();
+    if (widget.providerId != null) {
+      _loadProviderName();
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -54,6 +59,22 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _loadProviderName() async {
+    if (widget.providerId == null) return;
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.providerId)
+        .get();
+    if (snapshot.exists) {
+      final data = snapshot.data()!;
+      final firstName = data['firstName'] ?? '';
+      final lastName = data['lastName'] ?? '';
+      setState(() {
+        _providerFullName = '$firstName $lastName';
+      });
+    }
+  }
+
   Future<void> _sendRequest() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -63,6 +84,21 @@ class _ChatScreenState extends State<ChatScreen> {
     nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
     final requestId = const Uuid().v4();
+    String? imageUrl;
+
+    if (_selectedImage != null) {
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('requests/${widget.providerId}/$requestId.jpg');
+
+      final metadata = SettableMetadata(customMetadata: {
+        'userId': _userId,
+      });
+
+      await ref.putData(await _selectedImage!.readAsBytes(), metadata);
+      imageUrl = await ref.getDownloadURL();
+    }
+
     final requestData = {
       'requestId': requestId,
       'userId': _userId,
@@ -74,7 +110,7 @@ class _ChatScreenState extends State<ChatScreen> {
       'phone': _phoneController.text.trim(),
       'address': _addressController.text.trim(),
       'description': _descriptionController.text.trim(),
-      'imageUrl': null,
+      'imageUrl': imageUrl,
       'status': 'pending',
       'timestamp': FieldValue.serverTimestamp(),
     };
@@ -84,12 +120,9 @@ class _ChatScreenState extends State<ChatScreen> {
         .doc(requestId)
         .set(requestData);
 
-    if (_selectedImage != null) {
-      // رفع الصورة لو مطلوب
-    }
-
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('تم إرسال الطلب بنجاح')),
+      const SnackBar(content: Text('تم إرسال الطلب بنجاح'),backgroundColor: Colors.green,),
+
     );
     Navigator.pop(context);
   }
@@ -117,7 +150,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.serviceName),
+        title: Text(_providerFullName ?? widget.serviceName),
         backgroundColor: const Color(0xFF4C9581),
       ),
       body: SingleChildScrollView(
@@ -138,8 +171,7 @@ class _ChatScreenState extends State<ChatScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _sendRequest,
         icon: const Icon(Icons.send, color: Colors.white),
-        label:
-        const Text("إرسال الطلب", style: TextStyle(color: Colors.white)),
+        label: const Text("إرسال الطلب", style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF4C9581),
       ),
     );
