@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:awamer/widgets/shared/support_chat_screen.dart';
+import 'package:awamer/screens/support_chat_screen.dart';
+import 'package:awamer/l10n/app_localizations.dart';
 
 class UserSupportScreen extends StatelessWidget {
   const UserSupportScreen({super.key});
@@ -10,9 +11,8 @@ class UserSupportScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final chatDoc = await FirebaseFirestore.instance
-        .collection('support_chats')
-        .add({
+    final chatDoc =
+        await FirebaseFirestore.instance.collection('support_chats').add({
       'userId': user.uid,
       'supportId': 'BWn8QAHBDKb4Eky29xYgd48iLGH3',
       'userName': user.displayName ?? 'مستخدم',
@@ -76,8 +76,8 @@ class UserSupportScreen extends StatelessWidget {
             ],
           ),
           child: AppBar(
-            title: const Text(
-              'الدعم الفني',
+            title: Text(
+              AppLocalizations.of(context)!.technicalSupport,
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -118,8 +118,8 @@ class UserSupportScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'مرحباً بك في خدمة الدعم الفني',
+                  Text(
+                    AppLocalizations.of(context)!.welcomeMessage,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -127,8 +127,8 @@ class UserSupportScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'يمكنك التواصل مع فريق الدعم لحل أي مشكلة تواجهك',
+                  Text(
+                    AppLocalizations.of(context)!.supportDescription,
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -144,8 +144,8 @@ class UserSupportScreen extends StatelessWidget {
                       ),
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text(
-                      'بدء محادثة جديدة',
+                    child: Text(
+                      AppLocalizations.of(context)!.startNewChat,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -157,8 +157,8 @@ class UserSupportScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'المحادثات السابقة',
+            Text(
+              AppLocalizations.of(context)!.previousConversations,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -170,7 +170,8 @@ class UserSupportScreen extends StatelessWidget {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('support_chats')
-                    .where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+                    .where('userId',
+                        isEqualTo: FirebaseAuth.instance.currentUser?.uid)
                     .orderBy('lastMessageTime', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -179,9 +180,8 @@ class UserSupportScreen extends StatelessWidget {
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'لا توجد محادثات سابقة',
+                    return  Center(
+                      child: Text(AppLocalizations.of(context)!.noConversations,
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 16,
@@ -227,8 +227,7 @@ class UserSupportScreen extends StatelessWidget {
                                       size: 50,
                                     ),
                                     const SizedBox(height: 16),
-                                    const Text(
-                                      "حذف المحادثة",
+                                Text(AppLocalizations.of(context)!.deleteConversation,
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -236,8 +235,7 @@ class UserSupportScreen extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(height: 8),
-                                    const Text(
-                                      "هل أنت متأكد من رغبتك في حذف هذه المحادثة؟",
+                                Text(AppLocalizations.of(context)!.deleteConfirmation,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 16,
@@ -246,20 +244,26 @@ class UserSupportScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 24),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
                                         Expanded(
                                           child: OutlinedButton(
-                                            onPressed: () => Navigator.of(context).pop(false),
+                                            onPressed: () =>
+                                                Navigator.of(context)
+                                                    .pop(false),
                                             style: OutlinedButton.styleFrom(
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                               ),
-                                              side: const BorderSide(color: Color(0xFF4C9581)),
+                                              side: const BorderSide(
+                                                  color: Color(0xFF4C9581)),
                                             ),
-                                            child: const Text(
-                                              "إلغاء",
+                                            child: Text(AppLocalizations.of(context)!.cancel,
                                               style: TextStyle(
                                                 color: Color(0xFF4C9581),
                                                 fontSize: 16,
@@ -270,16 +274,20 @@ class UserSupportScreen extends StatelessWidget {
                                         const SizedBox(width: 16),
                                         Expanded(
                                           child: ElevatedButton(
-                                            onPressed: () => Navigator.of(context).pop(true),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(true),
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(0xFF4C9581),
-                                              padding: const EdgeInsets.symmetric(vertical: 12),
+                                              backgroundColor:
+                                                  const Color(0xFF4C9581),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                               ),
                                             ),
-                                            child: const Text(
-                                              "حذف",
+                                            child:Text(AppLocalizations.of(context)!.delete,
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.white,
@@ -303,7 +311,8 @@ class UserSupportScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => SupportChatScreen(chatId: chat.id),
+                                builder: (context) =>
+                                    SupportChatScreen(chatId: chat.id),
                               ),
                             );
                           },
@@ -326,15 +335,16 @@ class UserSupportScreen extends StatelessWidget {
                                 const CircleAvatar(
                                   radius: 24,
                                   backgroundColor: Color(0xFF4C9581),
-                                  child: Icon(Icons.support_agent, color: Colors.white),
+                                  child: Icon(Icons.support_agent,
+                                      color: Colors.white),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
-                                        'فريق الدعم الفني',
+                                      Text(AppLocalizations.of(context)!.supportTeam,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -353,7 +363,8 @@ class UserSupportScreen extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                const Icon(Icons.chevron_left, color: Color(0xFF4C9581)),
+                                const Icon(Icons.chevron_left,
+                                    color: Color(0xFF4C9581)),
                               ],
                             ),
                           ),

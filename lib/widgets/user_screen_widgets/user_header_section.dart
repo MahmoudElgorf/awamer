@@ -1,8 +1,8 @@
-import 'package:awamer/widgets/shared/profile_screen.dart';
+import 'package:awamer/screens/profile_screen.dart';
 import 'package:awamer/screens/user/user_orders_screen.dart';
 import 'package:awamer/screens/user/user_support_screen.dart';
 import 'package:awamer/screens/registration_screens/signin_screen.dart';
-import 'package:awamer/widgets/home_screen_widgets/notification_dialog.dart';
+import 'package:awamer/widgets/user_screen_widgets/notification_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -75,7 +75,7 @@ class UserHeaderSection extends StatelessWidget {
                           top: 8,
                           child: Container(
                             padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.red,
                               shape: BoxShape.circle,
                             ),
@@ -96,21 +96,58 @@ class UserHeaderSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          // Search Field
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Search',
-              hintStyle: TextStyle(color: Colors.grey[700]),
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
+          // User Info
+          if (uid != null)
+            StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  return const Text(
+                    'Welcome',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+
+                final userData = snapshot.data!.data() as Map<String, dynamic>;
+                final fullName = '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}';
+                final address = userData['address'] ?? 'No Address Provided';
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      fullName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, color: Colors.white70, size: 16),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            address,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
             ),
-          ),
         ],
       ),
     );
@@ -178,8 +215,7 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
 
                     if (label == 'Profile') {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (
-                            context) => const ProfileScreen()),
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
                       );
                     } else if (label == 'Logout') {
                       await FirebaseAuth.instance.signOut();
@@ -189,17 +225,14 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
                       );
                     } else if (label == 'Orders') {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const UserOrdersScreen()),
+                        MaterialPageRoute(builder: (context) => const UserOrdersScreen()),
                       );
                     } else if (label == 'Support') {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const UserSupportScreen()),
+                        MaterialPageRoute(builder: (context) => const UserSupportScreen()),
                       );
                     }
                   },
-
                   child: AnimatedScale(
                     scale: isPressed ? 1.2 : 1.0,
                     duration: const Duration(milliseconds: 150),

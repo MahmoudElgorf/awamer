@@ -1,4 +1,5 @@
 import 'package:awamer/firebase_options.dart';
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:awamer/screens/user/home_screen.dart';
 import 'package:awamer/screens/provider/provider_home_screen.dart';
 import 'package:awamer/screens/support/support_home_screen.dart';
@@ -8,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geolocator/geolocator.dart';
 
 // إشعارات
@@ -52,9 +54,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Service App',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('ar'), // Arabic
+      ],
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFF4F0FF),
-        primaryColor: Color(0xFF3F4E70),
+        scaffoldBackgroundColor: const Color(0xFFF4F0FF),
+        primaryColor: const Color(0xFF3F4E70),
         fontFamily: 'Arial',
       ),
       home: const AuthChecker(),
@@ -85,7 +97,15 @@ class AuthChecker extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).primaryColor,
+                ),
+              ),
+            ),
+          );
         }
 
         if (!snapshot.hasData) return const SigninScreen();
@@ -97,11 +117,23 @@ class AuthChecker extends StatelessWidget {
           future: FirebaseFirestore.instance.collection('users').doc(uid).get(),
           builder: (context, userSnapshot) {
             if (userSnapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              );
             }
 
             if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-              return const Scaffold(body: Center(child: Text("User data not found")));
+              return Scaffold(
+                body: Center(
+                  child: Text("User data not found"),
+                ),
+              );
             }
 
             final userData = userSnapshot.data!.data() as Map<String, dynamic>;

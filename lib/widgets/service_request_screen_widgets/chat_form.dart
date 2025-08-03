@@ -1,10 +1,11 @@
-import 'package:awamer/widgets/chat_screen_widgets/attachment_section.dart';
-import 'package:awamer/widgets/chat_screen_widgets/common_fields.dart';
-import 'package:awamer/widgets/chat_screen_widgets/delivery_form.dart';
-import 'package:awamer/widgets/chat_screen_widgets/doctor_form.dart';
-import 'package:awamer/widgets/chat_screen_widgets/pharmacy_form.dart';
-import 'package:awamer/widgets/chat_screen_widgets/restaurant_form.dart';
-import 'package:awamer/widgets/chat_screen_widgets/store_form.dart';
+import 'package:awamer/l10n/app_localizations.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/attachment_section.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/common_fields.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/delivery_form.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/doctor_form.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/pharmacy_form.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/restaurant_form.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/store_form.dart';
 import 'package:awamer/widgets/shared/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,6 +35,8 @@ class ChatForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         CommonFields(
@@ -42,18 +45,18 @@ class ChatForm extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         CustomTextField(
-          label: "العنوان",
-          hintText: "أدخل عنوانك",
+          label: loc.addressLabel,
+          hintText: loc.addressHint,
           controller: addressController,
           validator: (value) =>
-          (value == null || value.isEmpty) ? 'العنوان مطلوب' : null,
+          (value == null || value.isEmpty) ? loc.addressRequired : null,
         ),
         const SizedBox(height: 16),
         _buildServiceSpecificForm(serviceType),
         const SizedBox(height: 16),
         CustomTextField(
-          label: "الوصف",
-          hintText: "اكتب وصفًا لطلبك",
+          label: loc.descriptionLabel,
+          hintText: loc.descriptionHint,
           controller: descriptionController,
           maxLines: 4,
         ),
@@ -88,5 +91,4 @@ class ChatForm extends StatelessWidget {
         return const SizedBox.shrink();
     }
   }
-
 }

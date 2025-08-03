@@ -1,3 +1,5 @@
+import 'package:awamer/l10n/app_localizations.dart';
+import 'package:awamer/services/notification_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -20,12 +22,14 @@ class ProviderRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     final firstName = request['firstName'] ?? '';
     final lastName = request['lastName'] ?? '';
     final fullName = '$firstName $lastName'.trim();
     final formattedDate = (request['timestamp'] != null && request['timestamp'] is Timestamp)
         ? _formatDate(request['timestamp'])
-        : 'Date not available';
+        : loc.dateNotAvailable;
 
     final isPending = request['status'] == null || request['status'] == 'pending';
     final isAccepted = request['status'] == 'accepted';
@@ -41,8 +45,8 @@ class ProviderRequestCard extends StatelessWidget {
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
-            topLeft: Radius.circular(16), // Keeping top rounded for dialog
-            topRight: Radius.circular(16), // Keeping top rounded for dialog
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
           ),
           boxShadow: const [
             BoxShadow(
@@ -65,7 +69,7 @@ class ProviderRequestCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    fullName.isEmpty ? 'Unknown User' : fullName,
+                    fullName.isEmpty ? loc.unknownUser : fullName,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -88,7 +92,7 @@ class ProviderRequestCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        _getStatusText(request['status']),
+                        _getStatusText(loc, request['status']),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -107,13 +111,14 @@ class ProviderRequestCard extends StatelessWidget {
 
                   final userToken = request['userToken'];
                   final serviceType = request['serviceType'] ?? 'Service';
+                  final messages = serviceNotificationMessages[serviceType];
 
-                  if (userToken != null) {
+                  if (userToken != null && messages != null) {
                     await FirebaseFirestore.instance.collection('messages').add({
                       'token': userToken,
                       'notification': {
-                        'title': '$serviceType Request Accepted',
-                        'body': 'Your request has been accepted',
+                        'title': messages['title'],
+                        'body': messages['body'],
                       },
                       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                       'timestamp': FieldValue.serverTimestamp(),
@@ -155,14 +160,14 @@ class ProviderRequestCard extends StatelessWidget {
     }
   }
 
-  String _getStatusText(String status) {
+  String _getStatusText(AppLocalizations loc, String status) {
     switch (status) {
       case 'accepted':
-        return 'Accepted';
+        return loc.accepted;
       case 'rejected':
-        return 'Rejected';
+        return loc.rejected;
       case 'pending':
-        return 'Pending';
+        return loc.pending;
       default:
         return status;
     }

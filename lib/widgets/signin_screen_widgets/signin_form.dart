@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:awamer/screens/provider/provider_home_screen.dart';
 import 'package:awamer/screens/support/support_home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,9 +64,9 @@ class _SigninFormState extends State<SigninForm> {
         );
       }
     } on FirebaseAuthException catch (e) {
-      String msg = 'حدث خطأ أثناء تسجيل الدخول';
-      if (e.code == 'user-not-found') msg = 'هذا البريد غير مسجل';
-      if (e.code == 'wrong-password') msg = 'كلمة المرور غير صحيحة';
+      String msg = AppLocalizations.of(context)!.loginError;
+      if (e.code == 'user-not-found') msg = AppLocalizations.of(context)!.userNotFound;
+      if (e.code == 'wrong-password') msg = AppLocalizations.of(context)!.wrongPassword;
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -77,6 +78,8 @@ class _SigninFormState extends State<SigninForm> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Form(
       key: _formKey,
       child: Padding(
@@ -84,22 +87,22 @@ class _SigninFormState extends State<SigninForm> {
         child: Column(
           children: [
             CustomTextField(
-              label: 'Email',
-              hintText: 'Enter Your Email',
+              label: loc.email,
+              hintText: loc.enterYourEmail,
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               validator: (value) =>
-              value == null || !value.contains('@') ? 'بريد غير صحيح' : null,
+              value == null || !value.contains('@') ? loc.invalidEmail : null,
             ),
             const SizedBox(height: 20),
             CustomTextField(
-              label: 'Password',
-              hintText: 'Enter Your Password',
+              label: loc.password,
+              hintText: loc.enterYourPassword,
               controller: _passwordController,
               isPassword: true,
               obscureText: _obscurePassword,
               validator: (value) =>
-              value != null && value.length < 6 ? 'كلمة المرور قصيرة' : null,
+              value != null && value.length < 6 ? loc.shortPassword : null,
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -120,9 +123,9 @@ class _SigninFormState extends State<SigninForm> {
                     MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
                   );
                 },
-                child: const Text(
-                  'Forget Password?',
-                  style: TextStyle(color: Color(0xFF4C9581), fontWeight: FontWeight.bold),
+                child: Text(
+                  loc.forgotPassword,
+                  style: const TextStyle(color: Color(0xFF4C9581), fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -140,13 +143,13 @@ class _SigninFormState extends State<SigninForm> {
                 onPressed: _isLoading ? null : _login,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Sign In', style: TextStyle(color: Colors.white)),
+                    : Text(loc.signIn, style: const TextStyle(color: Colors.white)),
               ),
             ),
             const SizedBox(height: 20),
             AuthFooter(
-              text: "Don't Have An Account?",
-              buttonText: "Sign Up",
+              text: loc.dontHaveAccount,
+              buttonText: loc.signUp,
               onPressed: () {
                 Navigator.pushReplacement(
                   context,

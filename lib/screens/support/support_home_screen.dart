@@ -1,6 +1,7 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:awamer/widgets/shared/support_chat_screen.dart';
+import 'package:awamer/screens/support_chat_screen.dart';
 import 'package:awamer/widgets/profile_screen_widgets/provider_header_section.dart';
 
 class SupportHomeScreen extends StatelessWidget {
@@ -10,16 +11,17 @@ class SupportHomeScreen extends StatelessWidget {
     bool confirmDelete = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("حذف المحادثة"),
-        content: const Text("هل أنت متأكد من رغبتك في حذف هذه المحادثة؟"),
+        title: Text(AppLocalizations.of(context)!.deleteChat),
+        content: Text(AppLocalizations.of(context)!.confirmDeleteChat),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("إلغاء"),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text("حذف", style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(context)!.delete,
+                style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -59,12 +61,12 @@ class SupportHomeScreen extends StatelessWidget {
         children: [
           const ProviderHeaderSection(),
           const SizedBox(height: 16),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'لوحة الدعم الفني',
+                AppLocalizations.of(context)!.supportDashboard,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -87,9 +89,9 @@ class SupportHomeScreen extends StatelessWidget {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
+                  return  Center(
                     child: Text(
-                      'لا يوجد محادثات مفتوحة حالياً',
+                      AppLocalizations.of(context)!.noOpenChats,
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.black87,
@@ -114,7 +116,8 @@ class SupportHomeScreen extends StatelessWidget {
                           return const SizedBox();
                         }
 
-                        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                        final userData =
+                            userSnapshot.data!.data() as Map<String, dynamic>;
 
                         return Dismissible(
                           key: Key(chat.id),
@@ -123,22 +126,31 @@ class SupportHomeScreen extends StatelessWidget {
                             alignment: Alignment.centerRight,
                             padding: const EdgeInsets.only(right: 20),
                             color: Colors.red,
-                            child: const Icon(Icons.delete, color: Colors.white),
+                            child:
+                                const Icon(Icons.delete, color: Colors.white),
                           ),
                           confirmDismiss: (direction) async {
                             return await showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text("حذف المحادثة"),
-                                content: const Text("هل أنت متأكد من رغبتك في حذف هذه المحادثة؟"),
+                                title: Text(
+                                    AppLocalizations.of(context)!.deleteChat),
+                                content: Text(AppLocalizations.of(context)!
+                                    .confirmDeleteChat),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
-                                    child: const Text("إلغاء"),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: Text(
+                                        AppLocalizations.of(context)!.cancel),
                                   ),
                                   TextButton(
-                                    onPressed: () => Navigator.of(context).pop(true),
-                                    child: const Text("حذف", style: TextStyle(color: Colors.red)),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(
+                                        AppLocalizations.of(context)!.delete,
+                                        style:
+                                            const TextStyle(color: Colors.red)),
                                   ),
                                 ],
                               ),
@@ -178,15 +190,16 @@ class SupportHomeScreen extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 24,
-                                    backgroundColor:
-                                    const Color(0xFF4C9581).withOpacity(0.1),
+                                    backgroundColor: const Color(0xFF4C9581)
+                                        .withOpacity(0.1),
                                     child: const Icon(Icons.person,
                                         color: Color(0xFF4C9581)),
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '${userData['firstName']} ${userData['lastName']}',
@@ -197,7 +210,9 @@ class SupportHomeScreen extends StatelessWidget {
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          chatData['lastMessage'] ?? 'لا توجد رسائل',
+                                          chatData['lastMessage'] ??
+                                              AppLocalizations.of(context)!
+                                                  .noMessages,
                                           style: const TextStyle(
                                             color: Colors.grey,
                                             fontSize: 14,
@@ -221,7 +236,8 @@ class SupportHomeScreen extends StatelessWidget {
                                       ),
                                     ),
                                   const SizedBox(width: 8),
-                                  const Icon(Icons.chat, color: Color(0xFF4C9581)),
+                                  const Icon(Icons.chat,
+                                      color: Color(0xFF4C9581)),
                                 ],
                               ),
                             ),

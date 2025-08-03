@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +12,9 @@ class NotificationDialog extends StatelessWidget {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
     if (uid == null) {
-      return const AlertDialog(
-        title: Text('خطأ'),
-        content: Text('يجب تسجيل الدخول أولاً'),
+      return AlertDialog(
+        title: Text(AppLocalizations.of(context)!.errorTitle),
+        content: Text(AppLocalizations.of(context)!.loginRequired),
       );
     }
 
@@ -25,11 +26,10 @@ class NotificationDialog extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // رأس الحوار مع زوايا مدورة من الأسفل
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF4C9581), // لون أخضر متناسق مع التطبيق
+              color: const Color(0xFF4C9581),
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20),
@@ -40,9 +40,9 @@ class NotificationDialog extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'الإشعارات',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.notifications,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -55,8 +55,6 @@ class NotificationDialog extends StatelessWidget {
               ],
             ),
           ),
-
-          // محتوى الإشعارات
           SizedBox(
             width: double.maxFinite,
             height: MediaQuery.of(context).size.height * 0.6,
@@ -72,10 +70,10 @@ class NotificationDialog extends StatelessWidget {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'لا توجد إشعارات حالياً',
-                      style: TextStyle(color: Colors.grey),
+                      AppLocalizations.of(context)!.noNotifications,
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   );
                 }
@@ -89,8 +87,8 @@ class NotificationDialog extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final doc = notifications[index];
                     final data = doc.data() as Map<String, dynamic>;
-                    final title = data['title'] ?? 'بدون عنوان';
-                    final body = data['body'] ?? 'بدون محتوى';
+                    final title = data['title'] ?? AppLocalizations.of(context)!.noTitle;
+                    final body = data['body'] ?? AppLocalizations.of(context)!.noContent;
                     final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
                     final isRead = data['read'] == true;
 
@@ -141,7 +139,6 @@ class NotificationDialog extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // أيقونة الإشعار مع مؤشر القراءة
                                   Stack(
                                     children: [
                                       Container(
@@ -175,10 +172,7 @@ class NotificationDialog extends StatelessWidget {
                                         ),
                                     ],
                                   ),
-
                                   const SizedBox(width: 12),
-
-                                  // محتوى الإشعار
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,

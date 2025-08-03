@@ -1,6 +1,5 @@
-import 'package:awamer/widgets/shared/profile_screen.dart';
+import 'package:awamer/screens/profile_screen.dart';
 import 'package:awamer/screens/registration_screens/signin_screen.dart';
-import 'package:awamer/widgets/home_screen_widgets/notification_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

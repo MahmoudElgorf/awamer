@@ -1,5 +1,7 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../shared/empty_requests_view.dart';
 import 'provider_request_card.dart';
 import 'provider_request_details_screen.dart';
@@ -29,6 +31,8 @@ class ProviderRequestsTabView extends StatelessWidget {
   }
 
   Widget _buildRequestsList(BuildContext context, String status) {
+    final loc = AppLocalizations.of(context)!;
+
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('requests')
@@ -49,7 +53,7 @@ class ProviderRequestsTabView extends StatelessWidget {
                 const EmptyRequestsView(),
                 const SizedBox(height: 10),
                 Text(
-                  _getEmptyListMessage(status),
+                  _getEmptyListMessage(loc, status),
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],
@@ -93,16 +97,16 @@ class ProviderRequestsTabView extends StatelessWidget {
     );
   }
 
-  String _getEmptyListMessage(String status) {
+  String _getEmptyListMessage(AppLocalizations loc, String status) {
     switch (status) {
       case 'pending':
-        return 'No new requests';
+        return loc.noNewRequests;
       case 'accepted':
-        return 'No accepted requests';
+        return loc.noAcceptedRequests;
       case 'rejected':
-        return 'No rejected requests';
+        return loc.noRejectedRequests;
       default:
-        return 'No requests';
+        return loc.noRequests;
     }
   }
 }

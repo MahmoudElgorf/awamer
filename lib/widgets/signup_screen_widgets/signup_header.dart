@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class SignUpHeader extends StatelessWidget {
@@ -16,17 +17,17 @@ class SignUpHeader extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
+        children:  [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Create Your Account',
+                AppLocalizations.of(context)!.createYourAccount,
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
               SizedBox(height: 8),
               Text(
-                'Sign Up',
+                AppLocalizations.of(context)!.signUp,
                 style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
               ),
             ],

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:awamer/l10n/app_localizations.dart';
 
 class UserOrdersScreen extends StatelessWidget {
   const UserOrdersScreen({super.key});
@@ -22,7 +23,7 @@ class UserOrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80.0), // ارتفاع الهيدر
+        preferredSize: const Size.fromHeight(80.0),
         child: Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -38,9 +39,9 @@ class UserOrdersScreen extends StatelessWidget {
             ],
           ),
           child: AppBar(
-            title: const Text(
-              'My Orders',
-              style: TextStyle(
+            title: Text(
+              AppLocalizations.of(context)!.myOrders,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -54,7 +55,7 @@ class UserOrdersScreen extends StatelessWidget {
               ),
             ),
             centerTitle: true,
-            elevation: 0, // إزالة الظل الافتراضي
+            elevation: 0,
           ),
         ),
       ),
@@ -69,10 +70,10 @@ class UserOrdersScreen extends StatelessWidget {
           final requests = snapshot.data ?? [];
 
           if (requests.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'No orders yet',
-                style: TextStyle(
+                AppLocalizations.of(context)!.noOrdersYet,
+                style: const TextStyle(
                   fontSize: 18,
                   color: Colors.grey,
                 ),
@@ -86,7 +87,7 @@ class UserOrdersScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final data = requests[index].data() as Map<String, dynamic>;
 
-              final service = data['service'] ?? 'Service';
+              final service = data['service'] ?? AppLocalizations.of(context)!.service;
               final status = data['status'] ?? 'pending';
               final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
               final description = data['description'] ?? '';
@@ -110,7 +111,6 @@ class UserOrdersScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header with service name and status
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -134,7 +134,7 @@ class UserOrdersScreen extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              _getStatusText(status),
+                              _getStatusText(context, status),
                               style: TextStyle(
                                 color: statusColor,
                                 fontWeight: FontWeight.bold,
@@ -143,20 +143,14 @@ class UserOrdersScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 12),
-
-                      // Date and description
                       if (timestamp != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.calendar_today,
-                                size: 16,
-                                color: Colors.grey,
-                              ),
+                              const Icon(Icons.calendar_today,
+                                  size: 16, color: Colors.grey),
                               const SizedBox(width: 4),
                               Text(
                                 '${timestamp.toLocal().toString().split('.')[0]}',
@@ -166,7 +160,6 @@ class UserOrdersScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-
                       if (description.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 8),
@@ -178,8 +171,6 @@ class UserOrdersScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-
-                      // Image if exists
                       if (imageUrl != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
@@ -204,14 +195,14 @@ class UserOrdersScreen extends StatelessWidget {
     );
   }
 
-  String _getStatusText(String status) {
+  String _getStatusText(BuildContext context, String status) {
     switch (status) {
       case 'accepted':
-        return 'Accepted';
+        return AppLocalizations.of(context)!.statusAccepted;
       case 'rejected':
-        return 'Rejected';
+        return AppLocalizations.of(context)!.statusRejected;
       case 'pending':
-        return 'Pending';
+        return AppLocalizations.of(context)!.statusPending;
       default:
         return status;
     }

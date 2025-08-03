@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class EmptyRequestsView extends StatelessWidget {
@@ -5,10 +6,12 @@ class EmptyRequestsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final loc = AppLocalizations.of(context)!;
+
+    return Center(
       child: Text(
-        "No Currently Requests",
-        style: TextStyle(fontSize: 18, color: Colors.grey),
+        loc.noCurrentlyRequests,
+        style: const TextStyle(fontSize: 18, color: Colors.grey),
       ),
     );
   }

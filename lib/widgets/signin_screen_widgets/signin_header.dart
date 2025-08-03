@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../screens/user/home_screen.dart';
 
@@ -21,15 +22,15 @@ class SigninHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Welcome Back!',
+               Text(
+                AppLocalizations.of(context)!.welcomeBack,
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Sign In',
+           Text(
+            AppLocalizations.of(context)!.signIn,
             style: TextStyle(
               color: Colors.white,
               fontSize: 32,

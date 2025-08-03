@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class OfferCarousel extends StatefulWidget {
@@ -13,30 +14,6 @@ class _OfferCarouselState extends State<OfferCarousel> {
   int _currentPage = 0;
   Timer? _autoScrollTimer;
 
-  final List<Map<String, dynamic>> offers = [
-    {
-      'title': 'Free Shipping',
-      'subtitle': 'First 10 orders only',
-      'tag': 'Limited Offer',
-      'image': 'assets/images/freedelivery.jpg',
-      'buttonText': 'Order Now',
-    },
-    {
-      'title': '20% Discount',
-      'subtitle': 'For doctors & medical Services',
-      'tag': 'Medical Special',
-      'image': 'assets/images/clinicoffer.jpg',
-      'buttonText': 'Book Now',
-    },
-    {
-      'title': '10% Discount',
-      'subtitle': 'In partner restaurants',
-      'tag': 'Dining Offer',
-      'image': 'assets/images/Restaurantoffer.jpg',
-      'buttonText': 'Reserve Now',
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -46,7 +23,7 @@ class _OfferCarouselState extends State<OfferCarousel> {
   void _startAutoScroll() {
     _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (_pageController.hasClients) {
-        int nextPage = (_currentPage + 1) % offers.length;
+        int nextPage = (_currentPage + 1) % 3;
         _pageController.animateToPage(
           nextPage,
           duration: const Duration(milliseconds: 500),
@@ -65,6 +42,32 @@ class _OfferCarouselState extends State<OfferCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
+    final List<Map<String, dynamic>> offers = [
+      {
+        'title': loc.freeShippingTitle,
+        'subtitle': loc.freeShippingSubtitle,
+        'tag': loc.limitedOfferTag,
+        'image': 'assets/images/freedelivery.jpg',
+        'buttonText': loc.orderNow,
+      },
+      {
+        'title': loc.discount20Title,
+        'subtitle': loc.discount20Subtitle,
+        'tag': loc.medicalSpecialTag,
+        'image': 'assets/images/clinicoffer.jpg',
+        'buttonText': loc.bookNow,
+      },
+      {
+        'title': loc.discount10Title,
+        'subtitle': loc.discount10Subtitle,
+        'tag': loc.diningOfferTag,
+        'image': 'assets/images/Restaurantoffer.jpg',
+        'buttonText': loc.orderNow,
+      },
+    ];
+
     return Column(
       children: [
         SizedBox(
@@ -166,15 +169,14 @@ class _OfferCarouselState extends State<OfferCarousel> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 10),
                               ),
-                              onPressed: () {
-                                // تنفيذ الإجراء هنا
-                              },
+                              onPressed: () {},
                               child: Text(
                                 offer['buttonText'],
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],

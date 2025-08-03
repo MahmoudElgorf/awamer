@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../../widgets/shared/custom_text_field.dart';
 
@@ -17,27 +18,29 @@ class ProfileInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         _buildInfoRow(Icons.email, userData['email'] ?? ''),
         const SizedBox(height: 8),
         isEditing
-            ? _buildEditableField('Phone', phoneController)
+            ? _buildEditableField(loc.phone, loc.enterYourPhone, phoneController)
             : _buildInfoRow(Icons.phone, phoneController.text),
         const SizedBox(height: 8),
         isEditing
-            ? _buildEditableField('Address', addressController)
+            ? _buildEditableField(loc.address, loc.enterYourAddress, addressController)
             : _buildInfoRow(Icons.location_on, addressController.text),
       ],
     );
   }
 
-  Widget _buildEditableField(String label, TextEditingController controller) {
+  Widget _buildEditableField(String label, String hint, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: CustomTextField(
         label: label,
-        hintText: 'Enter your $label',
+        hintText: hint,
         controller: controller,
       ),
     );
@@ -57,7 +60,6 @@ class ProfileInfoSection extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-
         ],
       ),
     );

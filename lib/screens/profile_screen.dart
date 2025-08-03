@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:awamer/widgets/shared/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -43,6 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> saveChanges() async {
+    final loc = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -62,11 +64,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("تم تحديث الملف الشخصي بنجاح")),
+        SnackBar(content: Text(loc.profileUpdatedSuccessfully)),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("حدث خطأ أثناء التحديث")),
+        SnackBar(content: Text(loc.errorUpdatingProfile)),
       );
     }
   }
@@ -79,6 +81,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -92,9 +96,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Color(0xFF4C9581),
           ),
           child: AppBar(
-            title: const Text(
-              'الملف الشخصي',
-              style: TextStyle(
+            title: Text(
+              loc.profile,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -112,7 +116,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
           children: [
-            // صورة الملف الشخصي
             Container(
               padding: const EdgeInsets.all(16),
               child: const CircleAvatar(
@@ -125,75 +128,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // حقول المعلومات
             CustomTextField(
-              label: "الاسم الأول",
-              hintText: "أدخل اسمك الأول",
+              label: loc.firstName,
+              hintText: loc.enterFirstName,
               controller: firstNameController,
               keyboardType: TextInputType.name,
-              enabled: isEditing, // تفعيل/تعطيل حسب وضع التعديل
+              enabled: isEditing,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'يجب إدخال الاسم الأول';
+                  return loc.firstNameRequired;
                 }
                 return null;
               },
             ),
-
             const SizedBox(height: 16),
-
             CustomTextField(
-              label: "الاسم الأخير",
-              hintText: "أدخل اسمك الأخير",
+              label: loc.lastName,
+              hintText: loc.enterLastName,
               controller: lastNameController,
               keyboardType: TextInputType.name,
               enabled: isEditing,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'يجب إدخال الاسم الأخير';
+                  return loc.lastNameRequired;
                 }
                 return null;
               },
             ),
-
             const SizedBox(height: 16),
-
             CustomTextField(
-              label: "رقم الهاتف",
-              hintText: "أدخل رقم هاتفك",
+              label: loc.phoneNumber,
+              hintText: loc.enterPhoneNumber,
               controller: phoneController,
               keyboardType: TextInputType.phone,
               enabled: isEditing,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'يجب إدخال رقم الهاتف';
+                  return loc.phoneNumberRequired;
                 }
                 return null;
               },
             ),
-
             const SizedBox(height: 16),
-
             CustomTextField(
-              label: "العنوان",
-              hintText: "أدخل عنوانك",
+              label: loc.address,
+              hintText: loc.enterAddress,
               controller: addressController,
               maxLines: 2,
               enabled: isEditing,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'يجب إدخال العنوان';
+                  return loc.addressRequired;
                 }
                 return null;
               },
             ),
-
             const SizedBox(height: 32),
-
-            // زر التعديل/الحفظ
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -206,7 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 onPressed: isEditing ? saveChanges : toggleEdit,
                 child: Text(
-                  isEditing ? 'حفظ التغييرات' : 'تعديل الملف',
+                  isEditing ? loc.saveChanges : loc.editProfile,
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white,

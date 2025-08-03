@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,7 +58,9 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.trim().isEmpty) return;
+    if (_messageController.text
+        .trim()
+        .isEmpty) return;
 
     final user = _auth.currentUser;
     if (user == null) return;
@@ -68,7 +71,10 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
         .collection('messages')
         .add({
       'senderId': user.uid,
-      'senderName': user.displayName ?? (widget.isSupport ? 'الدعم' : 'مستخدم'),
+      'senderName': user.displayName ??
+          (widget.isSupport
+              ? AppLocalizations.of(context)!.support
+              : AppLocalizations.of(context)!.defaultUser),
       'text': _messageController.text,
       'timestamp': FieldValue.serverTimestamp(),
       'isRead': false,
@@ -87,20 +93,24 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
   Future<void> _deleteMessage(String messageId) async {
     bool confirm = await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("حذف الرسالة"),
-        content: const Text("هل أنت متأكد من رغبتك في حذف هذه الرسالة؟"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("إلغاء"),
+      builder: (context) =>
+          AlertDialog(
+            title: Text(AppLocalizations.of(context)!.deleteMessage),
+            content: Text(AppLocalizations.of(context)!.confirmDeleteMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(AppLocalizations.of(context)!.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(
+                  AppLocalizations.of(context)!.delete,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text("حذف", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
 
     if (confirm == true) {
@@ -139,9 +149,11 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
       final fcmToken = userDoc.data()?['fcmToken'] as String?;
       if (fcmToken == null || fcmToken.isEmpty) return;
 
-      await NotificationService.sendNotification(
+      await NotificationService.sendSupportMessageNotification(
         toToken: fcmToken,
-        title: widget.isSupport ? 'رد من الدعم الفني' : 'رسالة جديدة',
+        title: widget.isSupport
+            ? AppLocalizations.of(context)!.supportReply
+            : AppLocalizations.of(context)!.newMessage,
         body: _messageController.text,
         chatId: widget.chatId,
         senderId: _auth.currentUser?.uid ?? '',
@@ -161,7 +173,9 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.isSupport ? 'محادثة دعم' : 'الدعم الفني',
+          widget.isSupport
+              ? AppLocalizations.of(context)!.supportChat
+              : AppLocalizations.of(context)!.technicalSupport,
           style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFF4C9581),
@@ -174,10 +188,6 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
           Expanded(
             child: Container(
               decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/chat_bg.png"),
-                  fit: BoxFit.cover,
-                ),
               ),
               child: StreamBuilder<QuerySnapshot>(
                 stream: _messagesStream,
@@ -194,10 +204,8 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                           Icon(Icons.chat_bubble_outline,
                               size: 60, color: Colors.grey[400]),
                           const SizedBox(height: 10),
-                          const Text(
-                            'ابدأ المحادثة مع الدعم الفني',
-                            style: TextStyle(color: Colors.grey),
-                          ),
+                          Text(AppLocalizations.of(context)!
+                              .startChatWithSupport)
                         ],
                       ),
                     );
@@ -224,7 +232,10 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                               ConstrainedBox(
                                 constraints: BoxConstraints(
                                   maxWidth:
-                                  MediaQuery.of(context).size.width * 0.75,
+                                  MediaQuery
+                                      .of(context)
+                                      .size
+                                      .width * 0.75,
                                 ),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -258,7 +269,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                                         ? CrossAxisAlignment.end
                                         : CrossAxisAlignment.start,
                                     children: [
-                                      if (!isMe)
+                                      if (!isMe) ...[
                                         Text(
                                           data['senderName'] ?? '',
                                           style: const TextStyle(
@@ -266,7 +277,8 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                                             color: Color(0xFF4C9581),
                                           ),
                                         ),
-                                      const SizedBox(height: 4),
+                                        const SizedBox(height: 4),
+                                      ],
                                       Text(
                                         data['text'] ?? '',
                                         style: TextStyle(
@@ -276,7 +288,8 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        _formatTime(data['timestamp']?.toDate()),
+                                        _formatTime(
+                                            data['timestamp']?.toDate()),
                                         style: TextStyle(
                                           fontSize: 10,
                                           color: isMe
@@ -312,10 +325,11 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                     ),
                     child: TextField(
                       controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: 'اكتب رسالتك...',
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.typeYourMessage,
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12),
                       ),
                       maxLines: 4,
                       minLines: 1,

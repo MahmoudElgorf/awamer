@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/provider_home_screen_widgets/provider_tabs_section.dart';
+import 'package:awamer/l10n/app_localizations.dart';
+
 
 class ProviderHomeScreen extends StatefulWidget {
   const ProviderHomeScreen({super.key});
@@ -77,8 +79,8 @@ class _ProviderHomeScreenState extends State<ProviderHomeScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     if (currentUser == null) {
-      return const Scaffold(
-        body: Center(child: Text("Not logged in")),
+      return  Scaffold(
+        body: Center(child: Text(AppLocalizations.of(context)!.notLoggedIn)),
       );
     }
 

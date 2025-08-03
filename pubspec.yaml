@@ -22,7 +22,8 @@ dependencies:
   geocoding: ^4.0.0
   intl: ^0.20.2
   firebase_messaging: ^15.2.10
-
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +35,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - assets/images/App_Logo.jpg
     - assets/images/Delivery.jpg
@@ -64,11 +66,9 @@ flutter_native_splash:
   image: assets/images/App_Logo.jpg
   android: true
   ios: true
-
   android_12:
     color: "#4C9581"
     image: assets/images/App_Logo.jpg
-
 
 flutter_icons:
   android: true

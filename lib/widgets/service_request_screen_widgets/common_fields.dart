@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:awamer/widgets/shared/custom_text_field.dart';
 import 'package:flutter/material.dart';
 
@@ -13,24 +14,26 @@ class CommonFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Expanded(
           child: CustomTextField(
-            label: "الاسم بالكامل",
-            hintText: "أدخل اسمك",
+            label: loc.fullNameLabel,
+            hintText: loc.fullNameHint,
             controller: nameController,
-            validator: (value) => (value == null || value.isEmpty) ? 'الاسم مطلوب' : null,
+            validator: (value) => (value == null || value.isEmpty) ? loc.fullNameRequired : null,
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: CustomTextField(
-            label: "رقم الهاتف",
-            hintText: "أدخل رقم هاتفك",
+            label: loc.phoneLabel,
+            hintText: loc.phoneHint,
             controller: phoneController,
             keyboardType: TextInputType.phone,
-            validator: (value) => (value == null || value.isEmpty) ? 'رقم الهاتف مطلوب' : null,
+            validator: (value) => (value == null || value.isEmpty) ? loc.phoneRequired : null,
           ),
         ),
       ],

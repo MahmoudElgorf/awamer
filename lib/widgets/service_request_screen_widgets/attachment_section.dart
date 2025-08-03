@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -21,14 +22,15 @@ class AttachmentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Column(
       children: [
         ElevatedButton.icon(
           onPressed: _pickImage,
           icon: const Icon(Icons.attach_file, color: Colors.white),
-          label: const Text(
-            'إرفاق صورة',
-            style: TextStyle(color: Colors.white,),
+          label: Text(
+            loc.attachImage,
+            style: const TextStyle(color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4C9581),

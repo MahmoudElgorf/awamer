@@ -1,9 +1,8 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:awamer/models/data.dart';
 import 'package:awamer/screens/user/service_request_screen.dart';
 import 'package:flutter/material.dart';
 import 'category_item.dart';
-
-
 
 class CategorySection extends StatefulWidget {
   const CategorySection({super.key});
@@ -22,6 +21,60 @@ class _CategorySectionState extends State<CategorySection> {
     super.dispose();
   }
 
+  String getLocalizedCategoryName(BuildContext context, String name) {
+    final loc = AppLocalizations.of(context)!;
+    switch (name) {
+      case 'Delivery':
+        return loc.delivery;
+      case 'Doctors':
+        return loc.doctors;
+      case 'Pharmacies':
+        return loc.pharmacies;
+      case 'Stores':
+        return loc.stores;
+      case 'Restaurants':
+        return loc.restaurants;
+      default:
+        return name;
+    }
+  }
+
+  String getLocalizedSubCategoryName(BuildContext context, String name) {
+    final loc = AppLocalizations.of(context)!;
+    switch (name) {
+      case 'Deliver Your Parcel':
+        return loc.deliverYourParcel;
+      case 'Internal':
+        return loc.internal;
+      case 'Dentist':
+        return loc.dentist;
+      case 'Pediatrics':
+        return loc.pediatrics;
+      case 'Orthopedic':
+        return loc.orthopedic;
+      case 'Dermatology':
+        return loc.dermatology;
+      case 'Ophthalmology':
+        return loc.ophthalmology;
+      case 'ENT':
+        return loc.ent;
+      case 'Psychiatry':
+        return loc.psychiatry;
+      case 'Human Pharmacy':
+        return loc.humanPharmacy;
+      case 'Veterinary Pharmacy':
+        return loc.veterinaryPharmacy;
+      case 'Grocery Store':
+        return loc.groceryStore;
+      case 'Fast Food':
+        return loc.fastFood;
+      case 'Traditional Food':
+        return loc.traditionalFood;
+      default:
+        return name;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedCategoryName = selectedCategoryIndex != null
@@ -36,12 +89,11 @@ class _CategorySectionState extends State<CategorySection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // التصنيفات الرئيسية
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
-              'Categories',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              AppLocalizations.of(context)!.categories,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(
@@ -52,6 +104,7 @@ class _CategorySectionState extends State<CategorySection> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: Data.categories.length,
               itemBuilder: (context, index) {
+                final category = Data.categories[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: GestureDetector(
@@ -61,8 +114,8 @@ class _CategorySectionState extends State<CategorySection> {
                       });
                     },
                     child: CategoryItem(
-                      imageAsset: Data.categories[index].imageAsset,
-                      label: Data.categories[index].name,
+                      imageAsset: category.imageAsset,
+                      label: getLocalizedCategoryName(context, category.name),
                       isLarge: true,
                       isSelected: selectedCategoryIndex == index,
                     ),
@@ -71,8 +124,6 @@ class _CategorySectionState extends State<CategorySection> {
               },
             ),
           ),
-
-          // التصنيفات الفرعية
           if (selectedCategoryIndex != null && subCats.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -81,7 +132,7 @@ class _CategorySectionState extends State<CategorySection> {
                 children: [
                   GridView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: subCats.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
@@ -97,7 +148,7 @@ class _CategorySectionState extends State<CategorySection> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ServiceRequestScreen(
-                                serviceName: subCategory.name,
+                                serviceName: getLocalizedSubCategoryName(context, subCategory.name),
                                 imageAsset: subCategory.imageAsset,
                                 providerId: subCategory.providerId,
                               ),
@@ -106,7 +157,7 @@ class _CategorySectionState extends State<CategorySection> {
                         },
                         child: CategoryItem(
                           imageAsset: subCategory.imageAsset,
-                          label: subCategory.name,
+                          label: getLocalizedSubCategoryName(context, subCategory.name),
                           isLarge: false,
                           isSelected: false,
                         ),

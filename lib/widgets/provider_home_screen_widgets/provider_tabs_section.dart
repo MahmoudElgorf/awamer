@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ProviderTabsSection extends StatelessWidget {
@@ -7,6 +8,8 @@ class ProviderTabsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -26,7 +29,7 @@ class ProviderTabsSection extends StatelessWidget {
           data: Theme.of(context).copyWith(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            dividerColor: Colors.transparent, // هذه أهم إضافة
+            dividerColor: Colors.transparent,
           ),
           child: TabBar(
             controller: tabController,
@@ -35,7 +38,7 @@ class ProviderTabsSection extends StatelessWidget {
               color: const Color(0xFF4C9581),
             ),
             indicatorWeight: 0,
-            dividerColor: Colors.transparent, // تأكيد إزالة الخط
+            dividerColor: Colors.transparent,
             indicatorSize: TabBarIndicatorSize.tab,
             labelColor: Colors.white,
             unselectedLabelColor: const Color(0xFF4C9581),
@@ -47,11 +50,10 @@ class ProviderTabsSection extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.normal,
             ),
-            tabs: const [
-
-              Tab(text: 'Pending'),
-              Tab(text: 'Accepted'),
-              Tab(text: 'Rejected'),
+            tabs: [
+              Tab(text: loc.pending),
+              Tab(text: loc.accepted),
+              Tab(text: loc.rejected),
             ],
             overlayColor: MaterialStateProperty.all(Colors.transparent),
           ),

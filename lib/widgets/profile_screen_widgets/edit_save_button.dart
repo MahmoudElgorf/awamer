@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class EditSaveButton extends StatelessWidget {
@@ -14,6 +15,8 @@ class EditSaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return ElevatedButton(
       onPressed: isEditing ? onSave : onEdit,
       style: ElevatedButton.styleFrom(
@@ -24,7 +27,7 @@ class EditSaveButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
       ),
       child: Text(
-        isEditing ? 'Save Changes' : 'Edit Profile',
+        isEditing ? loc.saveChanges : loc.editProfile,
         style: const TextStyle(color: Colors.white),
       ),
     );

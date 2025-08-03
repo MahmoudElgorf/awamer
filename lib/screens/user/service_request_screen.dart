@@ -1,11 +1,11 @@
+import 'package:awamer/l10n/app_localizations.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/chat_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../widgets/chat_screen_widgets/chat_form.dart';
 
 class ServiceRequestScreen extends StatefulWidget {
   final String serviceName;
@@ -120,10 +120,6 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
         .doc(requestId)
         .set(requestData);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('تم إرسال الطلب بنجاح'),backgroundColor: Colors.green,),
-
-    );
     Navigator.pop(context);
   }
 
@@ -171,7 +167,10 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _sendRequest,
         icon: const Icon(Icons.send, color: Colors.white),
-        label: const Text("إرسال الطلب", style: TextStyle(color: Colors.white)),
+        label: Text(
+          AppLocalizations.of(context)!.submitRequest,
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xFF4C9581),
       ),
     );

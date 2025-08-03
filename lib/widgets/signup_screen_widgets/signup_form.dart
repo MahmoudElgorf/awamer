@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,22 +47,19 @@ class _SignUpFormState extends State<SignUpForm> {
     });
 
     try {
-      // Check if email already exists
       final emailExists = await _isEmailAlreadyRegistered(_emailController.text.trim());
       if (emailExists) {
         setState(() {
-          _emailError = 'Email is already registered';
+          _emailError = AppLocalizations.of(context)!.emailAlreadyExists;
         });
         return;
       }
 
-      // Create user
       final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Save additional user data
       await FirebaseFirestore.instance.collection('users').doc(result.user!.uid).set({
         'firstName': _firstNameController.text.trim(),
         'lastName': _lastNameController.text.trim(),
@@ -79,34 +77,25 @@ class _SignUpFormState extends State<SignUpForm> {
         );
       }
     } on FirebaseAuthException catch (e) {
-      String message = 'Registration failed';
       String? errorField;
 
       if (e.code == 'email-already-in-use') {
-        message = 'Email is already registered';
+        _emailError = AppLocalizations.of(context)!.emailAlreadyExists;
         errorField = 'email';
       } else if (e.code == 'weak-password') {
-        message = 'Password is too weak (min 6 chars)';
+        _passwordError = AppLocalizations.of(context)!.weakPassword;
         errorField = 'password';
       } else if (e.code == 'invalid-email') {
-        message = 'Invalid email format';
+        _emailError = AppLocalizations.of(context)!.invalidEmail;
         errorField = 'email';
-      } else if (e.code == 'operation-not-allowed') {
-        message = 'Registration is currently disabled';
+      } else {
+        _emailError = AppLocalizations.of(context)!.registrationFailed;
       }
 
-      setState(() {
-        if (errorField == 'email') {
-          _emailError = message;
-        } else if (errorField == 'password') {
-          _passwordError = message;
-        } else {
-          _emailError = message;
-        }
-      });
+      setState(() {});
     } catch (e) {
       setState(() {
-        _emailError = 'An unexpected error occurred';
+        _emailError = AppLocalizations.of(context)!.unexpectedError;
       });
     } finally {
       if (mounted) {
@@ -117,6 +106,8 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Form(
@@ -124,46 +115,25 @@ class _SignUpFormState extends State<SignUpForm> {
         child: Column(
           children: [
             const SizedBox(height: 32),
-
-            // Name Fields
             Row(
               children: [
-                Expanded(
-                  child: _buildFirstNameField(),
-                ),
+                Expanded(child: _buildFirstNameField(tr)),
                 const SizedBox(width: 16),
-                Expanded(
-                  child: _buildLastNameField(),
-                ),
+                Expanded(child: _buildLastNameField(tr)),
               ],
             ),
-
             const SizedBox(height: 20),
-
-            // Email Field
-            _buildEmailField(),
-
+            _buildEmailField(tr),
             const SizedBox(height: 20),
-
-            // Phone Field
-            _buildPhoneField(),
-
+            _buildPhoneField(tr),
             const SizedBox(height: 20),
-
-            // Password Field
-            _buildPasswordField(),
-
+            _buildPasswordField(tr),
             const SizedBox(height: 32),
-
-            // Sign Up Button
-            _buildSignUpButton(),
-
+            _buildSignUpButton(tr),
             const SizedBox(height: 24),
-
-            // Sign In Footer
             AuthFooter(
-              text: "Already have an account?",
-              buttonText: "Sign In",
+              text: tr.alreadyHaveAccount,
+              buttonText: tr.signIn,
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
@@ -177,59 +147,49 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Widget _buildFirstNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomTextField(
-          label: "First Name",
-          hintText: "Enter your first name",
-          controller: _firstNameController,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'First name is required';
-            }
-            return null;
-          },
-        ),
-      ],
+  Widget _buildFirstNameField(AppLocalizations tr) {
+    return CustomTextField(
+      label: tr.firstName,
+      hintText: tr.enterFirstName,
+      controller: _firstNameController,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return tr.firstNameRequired;
+        }
+        return null;
+      },
     );
   }
 
-  Widget _buildLastNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomTextField(
-          label: "Last Name",
-          hintText: "Enter your last name",
-          controller: _lastNameController,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Last name is required';
-            }
-            return null;
-          },
-        ),
-      ],
+  Widget _buildLastNameField(AppLocalizations tr) {
+    return CustomTextField(
+      label: tr.lastName,
+      hintText: tr.enterLastName,
+      controller: _lastNameController,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return tr.lastNameRequired;
+        }
+        return null;
+      },
     );
   }
 
-  Widget _buildEmailField() {
+  Widget _buildEmailField(AppLocalizations tr) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomTextField(
-          label: "Email",
-          hintText: "Enter your email",
+          label: tr.email,
+          hintText: tr.enterEmail,
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Email is required';
+              return tr.emailRequired;
             }
             if (!value.contains('@')) {
-              return 'Invalid email format';
+              return tr.invalidEmail;
             }
             return null;
           },
@@ -239,31 +199,28 @@ class _SignUpFormState extends State<SignUpForm> {
             padding: const EdgeInsets.only(top: 4, left: 12),
             child: Text(
               _emailError!,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: Colors.red, fontSize: 12),
             ),
           ),
       ],
     );
   }
 
-  Widget _buildPhoneField() {
+  Widget _buildPhoneField(AppLocalizations tr) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomTextField(
-          label: "Phone",
-          hintText: "Enter your phone number",
+          label: tr.phone,
+          hintText: tr.enterPhone,
           controller: _phoneController,
           keyboardType: TextInputType.phone,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Phone number is required';
+              return tr.phoneRequired;
             }
             if (value.length < 10) {
-              return 'Phone number is too short';
+              return tr.shortPhone;
             }
             return null;
           },
@@ -273,23 +230,20 @@ class _SignUpFormState extends State<SignUpForm> {
             padding: const EdgeInsets.only(top: 4, left: 12),
             child: Text(
               _phoneError!,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: Colors.red, fontSize: 12),
             ),
           ),
       ],
     );
   }
 
-  Widget _buildPasswordField() {
+  Widget _buildPasswordField(AppLocalizations tr) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomTextField(
-          label: "Password",
-          hintText: "Enter your password",
+          label: tr.password,
+          hintText: tr.enterPassword,
           controller: _passwordController,
           isPassword: true,
           obscureText: _obscurePassword,
@@ -306,10 +260,10 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Password is required';
+              return tr.passwordRequired;
             }
             if (value.length < 6) {
-              return 'Password must be at least 6 characters';
+              return tr.shortPassword;
             }
             return null;
           },
@@ -319,17 +273,14 @@ class _SignUpFormState extends State<SignUpForm> {
             padding: const EdgeInsets.only(top: 4, left: 12),
             child: Text(
               _passwordError!,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: Colors.red, fontSize: 12),
             ),
           ),
       ],
     );
   }
 
-  Widget _buildSignUpButton() {
+  Widget _buildSignUpButton(AppLocalizations tr) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -350,9 +301,9 @@ class _SignUpFormState extends State<SignUpForm> {
             strokeWidth: 3,
           ),
         )
-            : const Text(
-          'SIGN UP',
-          style: TextStyle(
+            : Text(
+          tr.signUp.toUpperCase(),
+          style: const TextStyle(
             fontSize: 16,
             color: Colors.white,
             fontWeight: FontWeight.bold,

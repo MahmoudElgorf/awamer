@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/shared/custom_text_field.dart';
@@ -64,8 +65,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'Forgot Password',
+        title:  Text(
+          AppLocalizations.of(context)!.forgotPassword,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -84,16 +85,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             children: [
               // Email Field
               CustomTextField(
-                label: 'Email Address',
-                hintText: 'Enter your registered email',
+                label: AppLocalizations.of(context)!.emailAddress,
+                hintText: AppLocalizations.of(context)!.enterRegisteredEmail,
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return AppLocalizations.of(context)!.pleaseEnterEmail;
                   }
                   if (!value.contains('@')) {
-                    return 'Please enter a valid email address';
+                    return AppLocalizations.of(context)!.invalidEmailAddress;
                   }
                   return null;
                 },
@@ -117,8 +118,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               const SizedBox(height: 8),
 
               // Instruction Text
-              const Text(
-                '* Check your spam folder if you don\'t find the reset email.',
+               Text(
+                AppLocalizations.of(context)!.checkSpamNote,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey,
@@ -147,8 +148,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     strokeWidth: 3,
                   ),
                 )
-                    : const Text(
-                  'Send Reset Link',
+                    :  Text(
+                  AppLocalizations.of(context)!.sendResetLink,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,

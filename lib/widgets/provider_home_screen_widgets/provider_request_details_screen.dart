@@ -1,3 +1,5 @@
+import 'package:awamer/l10n/app_localizations.dart';
+import 'package:awamer/services/notification_messages.dart';
 import 'package:awamer/widgets/provider_home_screen_widgets/image_viewer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,7 +28,10 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
           .doc(requestId)
           .get();
 
-      final userId = requestDoc.data()?['userId'];
+      final request = requestDoc.data();
+      if (request == null) return;
+
+      final userId = request['userId'];
       if (userId == null) return;
 
       final userDoc = await FirebaseFirestore.instance
@@ -37,10 +42,16 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
       final fcmToken = userDoc.data()?['fcmToken'];
       if (fcmToken == null) return;
 
+      final serviceType = request['serviceType'] ?? 'General';
+
+      final title = '${AppLocalizations.of(context)!.request} $status';
+      final body = serviceNotificationMessages[serviceType]?[status] ??
+          '${AppLocalizations.of(context)!.yourRequestHasBeen} $status.';
+
       final notificationData = {
         'userId': userId,
-        'title': 'Request $status',
-        'body': 'Your request has been $status.',
+        'title': title,
+        'body': body,
         'timestamp': FieldValue.serverTimestamp(),
         'read': false,
         'requestId': requestId,
@@ -53,8 +64,8 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
       await FirebaseFirestore.instance.collection('messages').add({
         'token': fcmToken,
         'notification': {
-          'title': notificationData['title'],
-          'body': notificationData['body'],
+          'title': title,
+          'body': body,
         },
         'data': {
           'requestId': requestId,
@@ -68,15 +79,16 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final firstName = requestData['firstName'] ?? '';
     final lastName = requestData['lastName'] ?? '';
     final userName = (firstName + ' ' + lastName).trim().isEmpty
-        ? 'Unknown Name'
+        ? loc.unknownName
         : '$firstName $lastName';
 
-    final address = requestData['address'] ?? 'No Address';
-    final phone = requestData['phone'] ?? 'No Phone';
-    final description = requestData['description'] ?? 'No Description';
+    final address = requestData['address'] ?? loc.noAddress;
+    final phone = requestData['phone'] ?? loc.noPhone;
+    final description = requestData['description'] ?? loc.noDescription;
     final imageUrl = requestData['imageUrl'];
     final currentStatus = requestData['status'] ?? 'pending';
 
@@ -88,7 +100,7 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
 
     final String formattedDate = timestamp != null
         ? DateFormat('yyyy/MM/dd – hh:mm a').format(timestamp.toDate())
-        : 'Not Available';
+        : loc.notAvailable;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -108,25 +120,26 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: ListView(
               children: [
-                _buildItem(title: "Name", value: userName),
+                _buildItem(title: loc.name, value: userName),
                 const SizedBox(height: 16),
-                _buildItem(title: "Address", value: address),
+                _buildItem(title: loc.address, value: address),
                 const SizedBox(height: 16),
-                _buildItem(title: "Phone", value: phone),
+                _buildItem(title: loc.phone, value: phone),
                 const SizedBox(height: 16),
-                _buildItem(title: "Description", value: description),
+                _buildItem(title: loc.description, value: description),
                 const SizedBox(height: 16),
-                _buildItem(title: "Date", value: formattedDate),
+                _buildItem(title: loc.date, value: formattedDate),
                 const SizedBox(height: 24),
-                _buildStatusIndicator(currentStatus),
+                _buildStatusIndicator(currentStatus, loc),
                 const SizedBox(height: 24),
                 if (onStatusChanged != null)
-                  _buildStatusButtons(context, currentStatus),
+                  _buildStatusButtons(context, currentStatus, loc),
                 const SizedBox(height: 16),
                 if (imageUrl != null && imageUrl.isNotEmpty) ...[
-                  const Text(
-                    "Attached Image",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  Text(
+                    loc.attachedImage,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 10),
                   GestureDetector(
@@ -177,7 +190,7 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusIndicator(String status) {
+  Widget _buildStatusIndicator(String status, AppLocalizations loc) {
     Color statusColor;
     switch (status) {
       case 'accepted':
@@ -209,7 +222,7 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            'Status: ${status.toUpperCase()}',
+            '${loc.status}: ${status.toUpperCase()}',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -221,7 +234,8 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusButtons(BuildContext context, String currentStatus) {
+  Widget _buildStatusButtons(
+      BuildContext context, String currentStatus, AppLocalizations loc) {
     final firstName = requestData['firstName'] ?? '';
     final lastName = requestData['lastName'] ?? '';
     final userName = '$firstName $lastName'.trim();
@@ -231,7 +245,7 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
       children: [
         ElevatedButton.icon(
           icon: const Icon(Icons.check, color: Colors.white),
-          label: const Text('Accept', style: TextStyle(color: Colors.white)),
+          label: Text(loc.accept, style: const TextStyle(color: Colors.white)),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -255,7 +269,7 @@ class ProviderRequestDetailsScreen extends StatelessWidget {
         ),
         ElevatedButton.icon(
           icon: const Icon(Icons.close, color: Colors.white),
-          label: const Text('Reject', style: TextStyle(color: Colors.white)),
+          label: Text(loc.reject, style: const TextStyle(color: Colors.white)),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

@@ -1,3 +1,4 @@
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../../widgets/shared/custom_text_field.dart';
 
@@ -17,6 +18,8 @@ class ProfileAvatarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         CircleAvatar(
@@ -28,8 +31,8 @@ class ProfileAvatarSection extends StatelessWidget {
         isEditing
             ? Column(
           children: [
-            _buildEditableField('First Name', firstNameController),
-            _buildEditableField('Last Name', lastNameController),
+            _buildEditableField(loc.firstName, loc.enterFirstName, firstNameController),
+            _buildEditableField(loc.lastName, loc.enterLastName, lastNameController),
           ],
         )
             : Text(
@@ -40,12 +43,12 @@ class ProfileAvatarSection extends StatelessWidget {
     );
   }
 
-  Widget _buildEditableField(String label, TextEditingController controller) {
+  Widget _buildEditableField(String label, String hint, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: CustomTextField(
         label: label,
-        hintText: 'Enter your $label',
+        hintText: hint,
         controller: controller,
       ),
     );
