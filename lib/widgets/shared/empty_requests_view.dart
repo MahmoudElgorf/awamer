@@ -7,7 +7,7 @@ class EmptyRequestsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        "لا توجد طلبات حالياً",
+        "No Currently Requests",
         style: TextStyle(fontSize: 18, color: Colors.grey),
       ),
     );

@@ -13,28 +13,47 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<bool> _checkEmailExists(String email) async {
+    try {
+      final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      return methods.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
 
   void _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: _emailController.text.trim());
+      final email = _emailController.text.trim();
+      final emailExists = await _checkEmailExists(email);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم إرسال رابط إعادة تعيين كلمة المرور')),
-      );
-    } on FirebaseAuthException catch (e) {
-      String message = 'حدث خطأ';
-      if (e.code == 'user-not-found') {
-        message = 'هذا البريد غير مسجل';
+      if (!emailExists) {
+        setState(() {
+          _errorMessage = 'Please enter a valid registered email';
+        });
+        return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      setState(() {
+        _errorMessage = 'Password reset link sent successfully';
+      });
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.code == 'user-not-found'
+            ? 'Please enter a valid registered email'
+            : 'Error: ${e.message}';
+      });
     } finally {
       setState(() => _isLoading = false);
     }
@@ -45,46 +64,93 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Forgot Password'),
+        title: const Text(
+          'Forgot Password',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
         backgroundColor: const Color(0xFF4C9581),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Email Field
               CustomTextField(
                 label: 'Email Address',
-                hintText: 'Your Email Address',
+                hintText: 'Enter your registered email',
                 controller: _emailController,
-                validator: (value) => value == null || !value.contains('@')
-                    ? 'أدخل بريدًا صحيحًا'
-                    : null,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Please enter a valid email address';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 6),
+
+              // Error/Success Message
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(
+                      color: _errorMessage!.startsWith('Password')
+                          ? Colors.green
+                          : Colors.red,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 8),
+
+              // Instruction Text
               const Text(
-                '* Check your spam folder if you don’t find the reset email.',
+                '* Check your spam folder if you don\'t find the reset email.',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 14,
                   color: Colors.grey,
                 ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+
+              const SizedBox(height: 32),
+
+              // Reset Button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4C9581),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 onPressed: _isLoading ? null : _resetPassword,
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 3,
+                  ),
+                )
                     : const Text(
                   'Send Reset Link',
                   style: TextStyle(
+                    fontSize: 16,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

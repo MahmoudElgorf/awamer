@@ -1,8 +1,9 @@
-import 'package:awamer/screens/app_screens/provider_home_screen.dart';
+import 'package:awamer/screens/provider/provider_home_screen.dart';
+import 'package:awamer/screens/support/support_home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../screens/app_screens/home_screen.dart';
+import '../../screens/user/home_screen.dart';
 import '../../screens/registration_screens/forgot_password_screen.dart';
 import '../../screens/registration_screens/signup_screen.dart';
 import '../shared/custom_text_field.dart';
@@ -19,14 +20,12 @@ class _SigninFormState extends State<SigninForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   bool _isLoading = false;
   bool _obscurePassword = true;
 
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
@@ -36,11 +35,7 @@ class _SigninFormState extends State<SigninForm> {
       );
 
       final uid = userCredential.user!.uid;
-
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userDoc.exists) {
         throw FirebaseAuthException(code: 'user-not-found');
@@ -56,6 +51,11 @@ class _SigninFormState extends State<SigninForm> {
           context,
           MaterialPageRoute(builder: (_) => const ProviderHomeScreen()),
         );
+      } else if (role == 'support') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const SupportHomeScreen()),
+        );
       } else {
         Navigator.pushReplacement(
           context,
@@ -64,18 +64,14 @@ class _SigninFormState extends State<SigninForm> {
       }
     } on FirebaseAuthException catch (e) {
       String msg = 'حدث خطأ أثناء تسجيل الدخول';
+      if (e.code == 'user-not-found') msg = 'هذا البريد غير مسجل';
+      if (e.code == 'wrong-password') msg = 'كلمة المرور غير صحيحة';
 
-      if (e.code == 'user-not-found') {
-        msg = 'هذا البريد غير مسجل';
-      } else if (e.code == 'wrong-password') {
-        msg = 'كلمة المرور غير صحيحة';
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } finally {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -96,36 +92,23 @@ class _SigninFormState extends State<SigninForm> {
               value == null || !value.contains('@') ? 'بريد غير صحيح' : null,
             ),
             const SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Password', style: TextStyle(fontWeight: FontWeight.w900)),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  validator: (value) =>
-                  value != null && value.length < 6 ? 'كلمة المرور قصيرة' : null,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Your Password',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+            CustomTextField(
+              label: 'Password',
+              hintText: 'Enter Your Password',
+              controller: _passwordController,
+              isPassword: true,
+              obscureText: _obscurePassword,
+              validator: (value) =>
+              value != null && value.length < 6 ? 'كلمة المرور قصيرة' : null,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.grey,
                 ),
-              ],
+                onPressed: () {
+                  setState(() => _obscurePassword = !_obscurePassword);
+                },
+              ),
             ),
             const SizedBox(height: 10),
             Align(

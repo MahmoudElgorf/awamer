@@ -17,83 +17,99 @@ class CategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLarge) {
-      // التصنيفات الرئيسية
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(6),
+          Container(
+            padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isSelected ? Colors.blue[50] : Colors.white,
+              color: Colors.white,
               border: Border.all(
-                color: isSelected ? Colors.blue : Colors.grey.shade300,
-                width: 2,
+                color: isSelected ? const Color(0xFF4C9581) : Colors.grey.shade300,
+                width: isSelected ? 2.5 : 1.5,
               ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.1),
-                  blurRadius: 6,
-                  offset: Offset(0, 2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
                 )
               ],
             ),
             child: CircleAvatar(
-              radius: 32,
-              backgroundImage: AssetImage(imageAsset),
+              radius: 34,
+              backgroundColor: Colors.grey[100],
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  imageAsset,
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             label,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: isSelected ? Colors.blue : Colors.black,
+              fontWeight: FontWeight.w600,
+              color: isSelected ? const Color(0xFF4C9581) : Colors.grey[800],
             ),
           ),
         ],
       );
     } else {
-      // التصنيفات الفرعية
+      // تصميم التصنيفات الفرعية (المربعة الصغيرة)
       return Container(
-        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue[50] : Colors.white,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade300,
+            color: Colors.grey.shade200,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.05),
-              blurRadius: 4,
-              offset: Offset(0, 2),
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             )
           ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              imageAsset,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: isSelected ? Colors.blue : Colors.black87,
-                fontWeight: FontWeight.w500,
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                shape: BoxShape.circle,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Image.asset(
+                  imageAsset,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

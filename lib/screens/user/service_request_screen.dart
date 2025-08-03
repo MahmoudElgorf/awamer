@@ -7,12 +7,12 @@ import 'package:uuid/uuid.dart';
 
 import '../../widgets/chat_screen_widgets/chat_form.dart';
 
-class ChatScreen extends StatefulWidget {
+class ServiceRequestScreen extends StatefulWidget {
   final String serviceName;
   final String imageAsset;
   final String? providerId;
 
-  const ChatScreen({
+  const ServiceRequestScreen({
     super.key,
     required this.serviceName,
     required this.imageAsset,
@@ -20,10 +20,10 @@ class ChatScreen extends StatefulWidget {
   });
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<ServiceRequestScreen> createState() => _ServiceRequestScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();

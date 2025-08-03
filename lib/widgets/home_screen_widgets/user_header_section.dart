@@ -1,15 +1,21 @@
-import 'package:awamer/screens/app_screens/profile_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:awamer/widgets/shared/profile_screen.dart';
+import 'package:awamer/screens/user/user_orders_screen.dart';
+import 'package:awamer/screens/user/user_support_screen.dart';
 import 'package:awamer/screens/registration_screens/signin_screen.dart';
+import 'package:awamer/widgets/home_screen_widgets/notification_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:ui';
 import 'dart:math';
 
-class HeaderSection extends StatelessWidget {
-  const HeaderSection({super.key});
+class UserHeaderSection extends StatelessWidget {
+  const UserHeaderSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
     return Container(
       padding: const EdgeInsets.only(top: 48, left: 16, right: 16, bottom: 16),
       decoration: const BoxDecoration(
@@ -42,7 +48,51 @@ class HeaderSection extends StatelessWidget {
                   );
                 },
               ),
-              const Icon(Icons.notifications_none, color: Colors.white),
+              uid == null
+                  ? const Icon(Icons.notifications_none, color: Colors.white)
+                  : StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('notifications')
+                    .where('userId', isEqualTo: uid)
+                    .where('read', isEqualTo: false)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  int unreadCount = snapshot.data?.docs.length ?? 0;
+                  return Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Colors.white),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const NotificationDialog(),
+                          );
+                        },
+                      ),
+                      if (unreadCount > 0)
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              unreadCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -82,11 +132,10 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
   int? _pressedIndex;
 
   List<Map<String, dynamic>> icons = [
-    {'icon': Icons.settings, 'label': 'Settings'},
+    {'icon': Icons.support_agent, 'label': 'Support'},
     {'icon': Icons.logout, 'label': 'Logout'},
     {'icon': Icons.shopping_bag, 'label': 'Orders'},
     {'icon': Icons.person, 'label': 'Profile'},
-
   ];
 
   @override
@@ -94,7 +143,6 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Blur + dark overlay
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: BackdropFilter(
@@ -126,27 +174,32 @@ class _BlurBackgroundMenuState extends State<BlurBackgroundMenu> {
                     setState(() => _pressedIndex = null);
 
                     final label = icons[index]['label'];
-                    Navigator.of(context).pop(); // يقفل الـ dialog
+                    Navigator.of(context).pop();
 
                     if (label == 'Profile') {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                        MaterialPageRoute(builder: (
+                            context) => const ProfileScreen()),
                       );
                     } else if (label == 'Logout') {
                       await FirebaseAuth.instance.signOut();
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => const SigninScreen()),
+                        MaterialPageRoute(builder: (context) => SigninScreen()),
                             (route) => false,
                       );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$label tapped')),
+                    } else if (label == 'Orders') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const UserOrdersScreen()),
+                      );
+                    } else if (label == 'Support') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const UserSupportScreen()),
                       );
                     }
                   },
-                  onTapCancel: () {
-                    setState(() => _pressedIndex = null);
-                  },
+
                   child: AnimatedScale(
                     scale: isPressed ? 1.2 : 1.0,
                     duration: const Duration(milliseconds: 150),

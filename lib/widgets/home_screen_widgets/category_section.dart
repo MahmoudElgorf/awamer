@@ -1,5 +1,5 @@
 import 'package:awamer/models/data.dart';
-import 'package:awamer/screens/app_screens/chat_screen.dart';
+import 'package:awamer/screens/user/service_request_screen.dart';
 import 'package:flutter/material.dart';
 import 'category_item.dart';
 
@@ -96,7 +96,7 @@ class _CategorySectionState extends State<CategorySection> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ChatScreen(
+                              builder: (context) => ServiceRequestScreen(
                                 serviceName: subCategory.name,
                                 imageAsset: subCategory.imageAsset,
                                 providerId: subCategory.providerId,
