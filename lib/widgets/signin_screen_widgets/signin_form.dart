@@ -24,10 +24,17 @@ class _SigninFormState extends State<SigninForm> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  String? _emailAuthError;
+  String? _passwordAuthError;
+
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _emailAuthError = null;
+      _passwordAuthError = null;
+    });
 
     try {
       final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -39,7 +46,11 @@ class _SigninFormState extends State<SigninForm> {
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userDoc.exists) {
-        throw FirebaseAuthException(code: 'user-not-found');
+        setState(() {
+          _emailAuthError = AppLocalizations.of(context)!.userNotFound;
+        });
+        _formKey.currentState!.validate();
+        return;
       }
 
       final data = userDoc.data();
@@ -64,13 +75,19 @@ class _SigninFormState extends State<SigninForm> {
         );
       }
     } on FirebaseAuthException catch (e) {
-      String msg = AppLocalizations.of(context)!.loginError;
-      if (e.code == 'user-not-found') msg = AppLocalizations.of(context)!.userNotFound;
-      if (e.code == 'wrong-password') msg = AppLocalizations.of(context)!.wrongPassword;
+      final loc = AppLocalizations.of(context)!;
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-      }
+      setState(() {
+        if (e.code == 'user-not-found') {
+          _emailAuthError = loc.userNotFound;
+        } else if (e.code == 'wrong-password') {
+          _passwordAuthError = loc.wrongPassword;
+        } else {
+          _emailAuthError = loc.loginError;
+        }
+      });
+
+      _formKey.currentState!.validate();
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -91,8 +108,18 @@ class _SigninFormState extends State<SigninForm> {
               hintText: loc.enterYourEmail,
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              validator: (value) =>
-              value == null || !value.contains('@') ? loc.invalidEmail : null,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return loc.enterYourEmail;
+                } else if (!value.contains('@')) {
+                  return loc.invalidEmail;
+                } else if (_emailAuthError != null) {
+                  final msg = _emailAuthError;
+                  _emailAuthError = null;
+                  return msg;
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 20),
             CustomTextField(
@@ -101,8 +128,18 @@ class _SigninFormState extends State<SigninForm> {
               controller: _passwordController,
               isPassword: true,
               obscureText: _obscurePassword,
-              validator: (value) =>
-              value != null && value.length < 6 ? loc.shortPassword : null,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return loc.enterYourPassword;
+                } else if (value.length < 6) {
+                  return loc.shortPassword;
+                } else if (_passwordAuthError != null) {
+                  final msg = _passwordAuthError;
+                  _passwordAuthError = null;
+                  return msg;
+                }
+                return null;
+              },
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscurePassword ? Icons.visibility : Icons.visibility_off,

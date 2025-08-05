@@ -1,5 +1,5 @@
 import 'package:awamer/services/notification_messages.dart';
-import 'package:awamer/screens/support_chat_screen.dart';
+import 'package:awamer/screens/support/support_chat_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

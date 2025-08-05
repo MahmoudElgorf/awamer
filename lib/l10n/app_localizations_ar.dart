@@ -150,7 +150,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get email => 'البريد الإلكتروني';
 
   @override
-  String get enterEmail => 'Enter your email';
+  String get enterEmail => 'أدخل بريدك الإلكتروني';
 
   @override
   String get emailRequired => 'البريد الإلكتروني مطلوب';
@@ -168,10 +168,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get enterPhone => 'أدخل رقم هاتفك';
 
   @override
-  String get phoneRequired => 'رقم الهاتف مطلوب';
-
-  @override
-  String get shortPhone => 'Phone number is too short';
+  String get shortPhone => 'رقم الهاتف قصير';
 
   @override
   String get password => 'كلمة المرور';
@@ -271,6 +268,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get phoneHint => 'أدخل رقم هاتفك';
+
+  @override
+  String get phoneRequired => 'رقم الهاتف مطلوب';
 
   @override
   String get pickupAddressLabel => 'عنوان الالتقاط';
@@ -544,4 +544,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noContent => 'بدون محتوى';
+
+  @override
+  String get selectLocation => 'اختر عنوانك';
+
+  @override
+  String get confirmLocation => 'تأكيد العنوان';
+
+  @override
+  String get pleaseLoginFirst => 'يرجى تسجيل الدخول أولاً';
+
+  @override
+  String get addResponse => 'إضافة الرد';
+
+  @override
+  String get price => 'السعر';
+
+  @override
+  String get expectedTime => 'الوقت المتوقع';
+
+  @override
+  String get note => 'ملاحظة';
+
+  @override
+  String get send => 'إرسال';
+
+  @override
+  String get responseSubmittedSuccessfully => 'تم إرسال الرد بنجاح';
+
+  @override
+  String get responseSubmissionFailed => 'فشل في إرسال الرد';
+
+  @override
+  String get requestAccepted => 'تم قبول الطلب';
+
+  @override
+  String get requestRejected => 'تم رفض الطلب';
+
+  @override
+  String get serviceType => 'نوع الخدمة';
+
+  @override
+  String get enterReason => 'أدخل سبب الرفض...';
+
+  @override
+  String get confirm => 'تأكيد';
+
+  @override
+  String get rejectionReason => 'سبب الرفض';
+
+  @override
+  String get providerNote => 'ملاحظة مقدم الخدمة';
+
+  @override
+  String get deliveryTime => 'وقت التوصيل';
+
+  @override
+  String get servicePrice => 'سعر الخدمة';
 }

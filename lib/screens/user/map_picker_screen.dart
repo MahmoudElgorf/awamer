@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:awamer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -61,7 +62,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pick Your Location'),
+        title: Text(AppLocalizations.of(context)!.selectLocation),
         backgroundColor: const Color(0xFF4C9581),
       ),
       body: Stack(
@@ -100,7 +101,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Confirm Location'),
+                child: Text(AppLocalizations.of(context)!.confirmLocation),
               ),
             ),
         ],

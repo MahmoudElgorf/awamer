@@ -1,5 +1,6 @@
-import 'package:awamer/l10n/app_localizations.dart';
-import 'package:awamer/widgets/service_request_screen_widgets/chat_form.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/ServiceRequestAppBar.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/ServiceRequestFAB.dart';
+import 'package:awamer/widgets/service_request_screen_widgets/ServiceRequestFormWrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -47,8 +48,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final snapshot =
-    await FirebaseFirestore.instance.collection('users').doc(_userId).get();
+    final snapshot = await FirebaseFirestore.instance.collection('users').doc(_userId).get();
     if (snapshot.exists) {
       final data = snapshot.data()!;
       final firstName = data['firstName'] ?? '';
@@ -60,11 +60,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
   }
 
   Future<void> _loadProviderName() async {
-    if (widget.providerId == null) return;
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.providerId)
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('users').doc(widget.providerId!).get();
     if (snapshot.exists) {
       final data = snapshot.data()!;
       final firstName = data['firstName'] ?? '';
@@ -80,8 +76,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
 
     final nameParts = _nameController.text.trim().split(' ');
     final firstName = nameParts.isNotEmpty ? nameParts.first : '';
-    final lastName =
-    nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
     final requestId = const Uuid().v4();
     String? imageUrl;
@@ -91,10 +86,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
           .ref()
           .child('requests/${widget.providerId}/$requestId.jpg');
 
-      final metadata = SettableMetadata(customMetadata: {
-        'userId': _userId,
-      });
-
+      final metadata = SettableMetadata(customMetadata: {'userId': _userId});
       await ref.putData(await _selectedImage!.readAsBytes(), metadata);
       imageUrl = await ref.getDownloadURL();
     }
@@ -115,11 +107,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
       'timestamp': FieldValue.serverTimestamp(),
     };
 
-    await FirebaseFirestore.instance
-        .collection('requests')
-        .doc(requestId)
-        .set(requestData);
-
+    await FirebaseFirestore.instance.collection('requests').doc(requestId).set(requestData);
     Navigator.pop(context);
   }
 
@@ -145,34 +133,20 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(_providerFullName ?? widget.serviceName),
-        backgroundColor: const Color(0xFF4C9581),
+      appBar: ServiceRequestAppBar(
+        title: _providerFullName ?? widget.serviceName,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ChatForm(
-            serviceType: serviceType,
-            nameController: _nameController,
-            phoneController: _phoneController,
-            addressController: _addressController,
-            descriptionController: _descriptionController,
-            onImagePicked: _onImagePicked,
-            selectedImage: _selectedImage,
-          ),
-        ),
+      body: ServiceRequestFormWrapper(
+        formKey: _formKey,
+        serviceType: serviceType,
+        nameController: _nameController,
+        phoneController: _phoneController,
+        addressController: _addressController,
+        descriptionController: _descriptionController,
+        onImagePicked: _onImagePicked,
+        selectedImage: _selectedImage,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _sendRequest,
-        icon: const Icon(Icons.send, color: Colors.white),
-        label: Text(
-          AppLocalizations.of(context)!.submitRequest,
-          style: const TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF4C9581),
-      ),
+      floatingActionButton: ServiceRequestFAB(onPressed: _sendRequest),
     );
   }
 }

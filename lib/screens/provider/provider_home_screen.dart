@@ -1,5 +1,5 @@
 import 'package:awamer/services/notification_messages.dart';
-import 'package:awamer/widgets/profile_screen_widgets/provider_header_section.dart';
+import 'package:awamer/widgets/shared/provider_header_section.dart';
 import 'package:awamer/widgets/provider_home_screen_widgets/provider_requests_tab_view.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

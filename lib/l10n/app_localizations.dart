@@ -410,12 +410,6 @@ abstract class AppLocalizations {
   /// **'Enter your phone number'**
   String get enterPhone;
 
-  /// No description provided for @phoneRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone number is required'**
-  String get phoneRequired;
-
   /// No description provided for @shortPhone.
   ///
   /// In en, this message translates to:
@@ -619,6 +613,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your phone number'**
   String get phoneHint;
+
+  /// No description provided for @phoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get phoneRequired;
 
   /// No description provided for @pickupAddressLabel.
   ///
@@ -1165,6 +1165,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Content'**
   String get noContent;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Your Location'**
+  String get selectLocation;
+
+  /// No description provided for @confirmLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get confirmLocation;
+
+  /// No description provided for @pleaseLoginFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login first'**
+  String get pleaseLoginFirst;
+
+  /// No description provided for @addResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Response'**
+  String get addResponse;
+
+  /// No description provided for @price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get price;
+
+  /// No description provided for @expectedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Time'**
+  String get expectedTime;
+
+  /// No description provided for @note.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get note;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @responseSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Response submitted successfully'**
+  String get responseSubmittedSuccessfully;
+
+  /// No description provided for @responseSubmissionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit response'**
+  String get responseSubmissionFailed;
+
+  /// No description provided for @requestAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Accepted'**
+  String get requestAccepted;
+
+  /// No description provided for @requestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Rejected'**
+  String get requestRejected;
+
+  /// No description provided for @serviceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Type'**
+  String get serviceType;
+
+  /// No description provided for @enterReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter rejection reason...'**
+  String get enterReason;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @rejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectionReason;
+
+  /// No description provided for @providerNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider Note'**
+  String get providerNote;
+
+  /// No description provided for @deliveryTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Time'**
+  String get deliveryTime;
+
+  /// No description provided for @servicePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Price'**
+  String get servicePrice;
 }
 
 class _AppLocalizationsDelegate

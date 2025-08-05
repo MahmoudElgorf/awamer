@@ -169,9 +169,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterPhone => 'Enter your phone number';
 
   @override
-  String get phoneRequired => 'Phone number is required';
-
-  @override
   String get shortPhone => 'Phone number is too short';
 
   @override
@@ -272,6 +269,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneHint => 'Enter your phone number';
+
+  @override
+  String get phoneRequired => 'Phone number is required';
 
   @override
   String get pickupAddressLabel => 'Pickup Address';
@@ -545,4 +545,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noContent => 'No Content';
+
+  @override
+  String get selectLocation => 'Select Your Location';
+
+  @override
+  String get confirmLocation => 'Confirm Location';
+
+  @override
+  String get pleaseLoginFirst => 'Please login first';
+
+  @override
+  String get addResponse => 'Add Response';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get expectedTime => 'Expected Time';
+
+  @override
+  String get note => 'Note';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get responseSubmittedSuccessfully => 'Response submitted successfully';
+
+  @override
+  String get responseSubmissionFailed => 'Failed to submit response';
+
+  @override
+  String get requestAccepted => 'Request Accepted';
+
+  @override
+  String get requestRejected => 'Request Rejected';
+
+  @override
+  String get serviceType => 'Service Type';
+
+  @override
+  String get enterReason => 'Enter rejection reason...';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get rejectionReason => 'Rejection Reason';
+
+  @override
+  String get providerNote => 'Provider Note';
+
+  @override
+  String get deliveryTime => 'Delivery Time';
+
+  @override
+  String get servicePrice => 'Service Price';
 }

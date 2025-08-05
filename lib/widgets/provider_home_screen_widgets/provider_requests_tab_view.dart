@@ -79,15 +79,9 @@ class ProviderRequestsTabView extends StatelessWidget {
                     builder: (_) => ProviderRequestDetailsScreen(
                       requestId: doc.id,
                       requestData: requestData,
-                      onStatusChanged: (newStatus) =>
-                          onStatusChanged(doc.id, newStatus),
+                      onStatusChanged: (newStatus) => onStatusChanged(doc.id, newStatus),
                     ),
                   ),
-                ),
-                showActionButtons: status == 'pending',
-                onStatusChanged: (isAccepted) => onStatusChanged(
-                  doc.id,
-                  isAccepted ? 'accepted' : 'rejected',
                 ),
               );
             },

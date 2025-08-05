@@ -4,3 +4,5 @@ output-localization-file: app_localizations.dart
 supported-locales:
   - en
   - ar
+
+untranslated-messages-file: untranslated_messages.json

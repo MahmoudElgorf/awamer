@@ -29,7 +29,7 @@ class Data {
       ServiceCategory(
         name: 'Deliver Your Parcel',
         imageAsset: 'assets/images/parcel.jpg',
-        providerId: 'Delivery',
+        providerId: 'MlQcK9T0hlVoSqjrvwUwlleV5WQ2',
       ),
     ],
     'Doctors': [
@@ -78,7 +78,7 @@ class Data {
       ServiceCategory(
         name: 'Human Pharmacy',
         imageAsset: 'assets/images/HumanPharmacy.jpg',
-        providerId: 'provider_human_pharmacy_1',
+        providerId: 'pX7ACqcqEMObJZiVhUSlA30dkUw2',
       ),
       ServiceCategory(
         name: 'Veterinary Pharmacy',
