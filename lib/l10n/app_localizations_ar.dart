@@ -601,4 +601,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get servicePrice => 'سعر الخدمة';
+
+  @override
+  String get acceptDelivery => 'قبول التوصيل';
+
+  @override
+  String get noNewDeliveryRequests => 'لا توجد طلبات توصيل جديدة';
+
+  @override
+  String get noAssignedRequests => 'لا توجد توصيل جديدة';
+
+  @override
+  String get noCompletedDeliveries => 'لا توجد طلبات مكتملة';
 }

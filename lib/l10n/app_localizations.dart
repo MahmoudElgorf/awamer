@@ -1279,6 +1279,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Service Price'**
   String get servicePrice;
+
+  /// No description provided for @acceptDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Delivery '**
+  String get acceptDelivery;
+
+  /// No description provided for @noNewDeliveryRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No New Delivery Requests'**
+  String get noNewDeliveryRequests;
+
+  /// No description provided for @noAssignedRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No Assigned Requests'**
+  String get noAssignedRequests;
+
+  /// No description provided for @noCompletedDeliveries.
+  ///
+  /// In en, this message translates to:
+  /// **'No Completed Deliveries'**
+  String get noCompletedDeliveries;
 }
 
 class _AppLocalizationsDelegate

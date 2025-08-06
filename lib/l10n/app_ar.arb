@@ -197,5 +197,10 @@
   "rejectionReason": "سبب الرفض",
   "serviceType": "نوع الخدمة",
   "enterReason": "أدخل سبب الرفض...",
-  "confirm": "تأكيد"
+  "confirm": "تأكيد",
+  "acceptDelivery": "قبول التوصيل",
+  "noNewDeliveryRequests": "لا توجد طلبات توصيل جديدة",
+  "noAssignedRequests": "لا توجد توصيل جديدة",
+  "noCompletedDeliveries": "لا توجد طلبات مكتملة"
+
 }

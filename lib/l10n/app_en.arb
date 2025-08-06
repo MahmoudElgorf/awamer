@@ -196,5 +196,9 @@
   "rejectionReason": "Rejection Reason",
   "providerNote": "Provider Note",
   "deliveryTime": "Delivery Time",
-  "servicePrice": "Service Price"
+  "servicePrice": "Service Price",
+  "acceptDelivery": "Accept Delivery ",
+  "noNewDeliveryRequests": "No New Delivery Requests",
+  "noAssignedRequests": "No Assigned Requests",
+  "noCompletedDeliveries": "No Completed Deliveries"
 }

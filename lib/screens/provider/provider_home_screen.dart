@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/provider_home_screen_widgets/provider_tabs_section.dart';
 import 'package:awamer/l10n/app_localizations.dart';
 
-
 class ProviderHomeScreen extends StatefulWidget {
   const ProviderHomeScreen({super.key});
 
@@ -18,24 +17,35 @@ class ProviderHomeScreen extends StatefulWidget {
 class _ProviderHomeScreenState extends State<ProviderHomeScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final currentUser = FirebaseAuth.instance.currentUser;
+  String? _userServiceType;
+  String? _userRole;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _fetchUserData();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  Future<void> _fetchUserData() async {
+    if (currentUser != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          _userServiceType = userDoc.data()?['serviceType'];
+          _userRole = userDoc.data()?['role'];
+        });
+      }
+    }
   }
 
   Future<void> _updateRequestStatus(String requestId, String newStatus) async {
     try {
       final requestRef = FirebaseFirestore.instance.collection('requests').doc(requestId);
-
-      // تحديث الحالة في Firestore
       await requestRef.update({
         'status': newStatus,
         'respondedAt': FieldValue.serverTimestamp(),
@@ -77,9 +87,15 @@ class _ProviderHomeScreenState extends State<ProviderHomeScreen> with SingleTick
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (currentUser == null) {
-      return  Scaffold(
+      return Scaffold(
         body: Center(child: Text(AppLocalizations.of(context)!.notLoggedIn)),
       );
     }
@@ -95,6 +111,8 @@ class _ProviderHomeScreenState extends State<ProviderHomeScreen> with SingleTick
               tabController: _tabController,
               currentUserId: currentUser!.uid,
               onStatusChanged: _updateRequestStatus,
+              userServiceType: _userServiceType,
+              userRole: _userRole,
             ),
           ),
         ],

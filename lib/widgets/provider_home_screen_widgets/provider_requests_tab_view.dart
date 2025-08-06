@@ -5,17 +5,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../shared/empty_requests_view.dart';
 import 'provider_request_card.dart';
 import 'provider_request_details_screen.dart';
+import 'accepted_order_card.dart';
 
 class ProviderRequestsTabView extends StatelessWidget {
   final TabController tabController;
   final String currentUserId;
   final Future<void> Function(String, String) onStatusChanged;
+  final String? userServiceType;
+  final String? userRole;
 
   const ProviderRequestsTabView({
     super.key,
     required this.tabController,
     required this.currentUserId,
     required this.onStatusChanged,
+    this.userServiceType,
+    this.userRole,
   });
 
   @override
@@ -32,6 +37,7 @@ class ProviderRequestsTabView extends StatelessWidget {
 
   Widget _buildRequestsList(BuildContext context, String status) {
     final loc = AppLocalizations.of(context)!;
+    final bool showBothCards = userRole == 'provider' && userServiceType == 'Delivery';
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -70,24 +76,44 @@ class ProviderRequestsTabView extends StatelessWidget {
               final doc = snapshot.data!.docs[index];
               final requestData = doc.data() as Map<String, dynamic>;
 
-              return ProviderRequestCard(
-                request: requestData,
-                requestId: doc.id,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ProviderRequestDetailsScreen(
-                      requestId: doc.id,
-                      requestData: requestData,
-                      onStatusChanged: (newStatus) => onStatusChanged(doc.id, newStatus),
+              if (showBothCards && status == 'accepted') {
+                return Column(
+                  children: [
+                    AcceptedOrderCard(
+                      order: requestData,
                     ),
-                  ),
-                ),
-              );
+                    const SizedBox(height: 8),
+                    ProviderRequestCard(
+                      request: requestData,
+                      requestId: doc.id,
+                      onTap: () => _navigateToDetails(context, doc.id, requestData),
+                    ),
+                  ],
+                );
+              } else {
+                return ProviderRequestCard(
+                  request: requestData,
+                  requestId: doc.id,
+                  onTap: () => _navigateToDetails(context, doc.id, requestData),
+                );
+              }
             },
           ),
         );
       },
+    );
+  }
+
+  void _navigateToDetails(BuildContext context, String requestId, Map<String, dynamic> requestData) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProviderRequestDetailsScreen(
+          requestId: requestId,
+          requestData: requestData,
+          onStatusChanged: (newStatus) => onStatusChanged(requestId, newStatus),
+        ),
+      ),
     );
   }
 

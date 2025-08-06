@@ -602,4 +602,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get servicePrice => 'Service Price';
+
+  @override
+  String get acceptDelivery => 'Accept Delivery ';
+
+  @override
+  String get noNewDeliveryRequests => 'No New Delivery Requests';
+
+  @override
+  String get noAssignedRequests => 'No Assigned Requests';
+
+  @override
+  String get noCompletedDeliveries => 'No Completed Deliveries';
 }

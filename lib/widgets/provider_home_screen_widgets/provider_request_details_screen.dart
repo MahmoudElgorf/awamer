@@ -60,91 +60,11 @@ class _ProviderRequestDetailsScreenState
     return widget.requestData['service'] ?? 'General';
   }
 
-  Future<void> _assignToDeliveryProvider() async {
-    try {
-      final serviceType = _getServiceType();
-
-      // لا نرسل طلب توصيل لخدمات الأطباء وطب الأسنان
-      if (serviceType == 'Doctor' || serviceType == 'Dentist') return;
-
-      // البحث عن مندوب توصيل متاح
-      final deliveryProviders = await FirebaseFirestore.instance
-          .collection('users')
-          .where('role', isEqualTo: 'provider')
-          .where('service', isEqualTo: 'Delivery')
-          .where('serviceType', isEqualTo: 'Delivery')
-          .limit(1)
-          .get();
-
-      if (deliveryProviders.docs.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('لا يوجد مندوب توصيل متاح حالياً')));
-        }
-        return;
-      }
-
-      final deliveryProvider = deliveryProviders.docs.first;
-      final deliveryProviderId = deliveryProvider.id;
-      final deliveryProviderFcmToken = deliveryProvider.data()['fcmToken'];
-
-      // تحديث الطلب الأصلي بإضافة معلومات المندوب
-      await FirebaseFirestore.instance
-          .collection('requests')
-          .doc(widget.requestId)
-          .update({
-        'assignedDeliveryProviderId': deliveryProviderId,
-        'deliveryStatus': 'pending',
-        'deliveryAssignedAt': FieldValue.serverTimestamp(),
-      });
-
-      // إرسال إشعار للمندوب
-      await _sendDeliveryNotification(
-        deliveryProviderId: deliveryProviderId,
-        fcmToken: deliveryProviderFcmToken,
-      );
-
-    } catch (e) {
-      print('Error assigning to delivery provider: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('حدث خطأ أثناء تعيين مندوب التوصيل')));
-      }
-    }
-  }
-
-  Future<void> _sendDeliveryNotification({
-    required String deliveryProviderId,
-    required String fcmToken,
-  }) async {
-    try {
-      // إرسال إشعار FCM
-      await FirebaseFirestore.instance.collection('messages').add({
-        'token': fcmToken,
-        'notification': {
-          'title': 'طلب توصيل جديد',
-          'body': 'طلب توصيل جديد من نوع ${widget.requestData['service']}',
-        },
-        'data': {
-          'requestId': widget.requestId,
-          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-          'type': 'new_delivery',
-        },
-      });
-
-      // إضافة إشعار في collection الإشعارات
-      await FirebaseFirestore.instance.collection('notifications').add({
-        'userId': deliveryProviderId,
-        'title': 'طلب توصيل جديد',
-        'body': 'طلب توصيل جديد من نوع ${widget.requestData['service']}',
-        'timestamp': FieldValue.serverTimestamp(),
-        'read': false,
-        'requestId': widget.requestId,
-        'type': 'delivery_assignment',
-      });
-    } catch (e) {
-      print('Error sending delivery notification: $e');
-    }
+  bool _shouldSkipSaving() {
+    final serviceType = _getServiceType();
+    return serviceType == 'Doctor' ||
+        serviceType == 'Dentist' ||
+        serviceType == 'Deliver Your Parcel';
   }
 
   Future<void> _sendNotification({
@@ -164,7 +84,6 @@ class _ProviderRequestDetailsScreenState
       final fcmToken = userDoc.data()?['fcmToken'];
       if (fcmToken == null) return;
 
-      // إضافة إشعار للمستخدم
       await FirebaseFirestore.instance.collection('notifications').add({
         'userId': userId,
         'title': 'تحديث حالة الطلب',
@@ -174,7 +93,6 @@ class _ProviderRequestDetailsScreenState
         'requestId': widget.requestId,
       });
 
-      // إرسال إشعار FCM
       await FirebaseFirestore.instance.collection('messages').add({
         'token': fcmToken,
         'notification': {
@@ -215,12 +133,30 @@ class _ProviderRequestDetailsScreenState
 
       await _updateRequestData(status);
 
-      // إرسال الطلب لمندوب التوصيل إذا كان مقبولاً وليس طلب طبيب
-      if (status == 'accepted') {
-        await _assignToDeliveryProvider();
+      if (status == 'accepted' && !_shouldSkipSaving()) {
+        await _saveAcceptedOrderCopy();
       }
 
       if (mounted) Navigator.pop(context);
+    }
+  }
+
+  Future<void> _saveAcceptedOrderCopy() async {
+    try {
+      final orderData = {
+        ...widget.requestData,
+        'deliveryTime': _deliveryTimeController.text,
+        'servicePrice': _servicePriceController.text,
+        'providerNote': _providerNoteController.text,
+        'acceptedAt': FieldValue.serverTimestamp(),
+        'originalRequestId': widget.requestId,
+      };
+
+      await FirebaseFirestore.instance
+          .collection('acceptedOrders')
+          .add(orderData);
+    } catch (e) {
+      print('Error saving accepted order copy: $e');
     }
   }
 
@@ -258,49 +194,50 @@ class _ProviderRequestDetailsScreenState
   Future<String?> _showRejectionDialog() async {
     return showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text(
-          AppLocalizations.of(context)!.rejectionReason,
-          style: const TextStyle(color: Colors.red),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomTextField(
-                label: 'سبب الرفض',
-                hintText: 'أدخل سبب الرفض...',
-                controller: _rejectionReasonController,
-                maxLines: 3,
+      builder: (context) =>
+          AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text(
+              AppLocalizations.of(context)!.rejectionReason,
+              style: const TextStyle(color: Colors.red),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomTextField(
+                    label: 'سبب الرفض',
+                    hintText: 'أدخل سبب الرفض...',
+                    controller: _rejectionReasonController,
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  AppLocalizations.of(context)!.cancel,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (_rejectionReasonController.text.isNotEmpty) {
+                    Navigator.pop(context, _rejectionReasonController.text);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(AppLocalizations.of(context)!.confirm),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              AppLocalizations.of(context)!.cancel,
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (_rejectionReasonController.text.isNotEmpty) {
-                Navigator.pop(context, _rejectionReasonController.text);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(AppLocalizations.of(context)!.confirm),
-          ),
-        ],
-      ),
     );
   }
 
@@ -309,38 +246,42 @@ class _ProviderRequestDetailsScreenState
 
     return showDialog<Map<String, String>>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text(
-          _getDialogTitle(serviceType),
-          style: const TextStyle(color: Color(0xFF4C9581)),
-        ),
-        content: _buildServiceSpecificForm(serviceType),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            _getDialogTitle(serviceType),
+            style: const TextStyle(color: Color(0xFF4C9581)),
           ),
-          ElevatedButton(
-            onPressed: () {
-              if (_validateForm(serviceType)) {
-                Navigator.pop(context, {
-                  'deliveryTime': _deliveryTimeController.text,
-                  'servicePrice': _servicePriceController.text,
-                  'providerNote': _providerNoteController.text,
-                });
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4C9581),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+          content: SingleChildScrollView(
+            child: _buildServiceSpecificForm(serviceType),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('إلغاء'),
             ),
-            child: Text(_getConfirmButtonText(serviceType)),
-          ),
-        ],
-      ),
+            ElevatedButton(
+              onPressed: () {
+                if (_validateForm(serviceType)) {
+                  Navigator.pop(context, {
+                    'deliveryTime': _deliveryTimeController.text,
+                    'servicePrice': _servicePriceController.text,
+                    'providerNote': _providerNoteController.text,
+                  });
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4C9581),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(_getConfirmButtonText(serviceType)),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -564,58 +505,62 @@ class _ProviderRequestDetailsScreenState
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 8,
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ListView(
-              children: [
-                _buildItem(title: loc.serviceType, value: serviceType),
-                const SizedBox(height: 16),
-                _buildItem(title: loc.name, value: userName),
-                const SizedBox(height: 16),
-                _buildItem(title: loc.address, value: address),
-                const SizedBox(height: 16),
-                _buildItem(title: loc.phone, value: phone),
-                const SizedBox(height: 16),
-                _buildItem(title: loc.description, value: description),
-                const SizedBox(height: 16),
-                _buildItem(title: loc.date, value: formattedDate),
-                const SizedBox(height: 24),
-                _buildStatusIndicator(currentStatus, loc),
-                const SizedBox(height: 24),
-                if (widget.onStatusChanged != null)
-                  _buildStatusButtons(currentStatus, loc),
-                const SizedBox(height: 16),
-                if (imageUrl != null && imageUrl.isNotEmpty) ...[
-                  Text(
-                    loc.attachedImage,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
-                      showImagePopup(context, imageUrl);
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        imageUrl,
-                        height: 220,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+        child: ListView(
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 8,
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    _buildItem(title: loc.serviceType, value: serviceType),
+                    const SizedBox(height: 16),
+                    _buildItem(title: loc.name, value: userName),
+                    const SizedBox(height: 16),
+                    _buildItem(title: loc.address, value: address),
+                    const SizedBox(height: 16),
+                    _buildItem(title: loc.phone, value: phone),
+                    const SizedBox(height: 16),
+                    _buildItem(title: loc.description, value: description),
+                    const SizedBox(height: 16),
+                    _buildItem(title: loc.date, value: formattedDate),
+                    const SizedBox(height: 24),
+                    _buildStatusIndicator(currentStatus, loc),
+                    const SizedBox(height: 24),
+                    if (widget.onStatusChanged != null)
+                      _buildStatusButtons(currentStatus, loc),
+                    const SizedBox(height: 16),
+                    if (imageUrl != null && imageUrl.isNotEmpty) ...[
+                      Text(
+                        loc.attachedImage,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
                       ),
-                    ),
-                  ),
-                ],
-              ],
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          showImagePopup(context, imageUrl);
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.network(
+                            imageUrl,
+                            height: 220,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
